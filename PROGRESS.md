@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 1 — Event Loop / Async-Sync / 為什麼單執行緒也會 Race Condition（含 blocking/non-blocking、I/O-bound vs CPU-bound，全部完成）
-- **目前任務**：`docs/interview-questions.md` Q4 待自己補完文字，之後就可以正式進入 Week 2（Mutex）
+- **週次**：Week 1 已全部完成（Event Loop / Async-Sync / Race Condition / blocking-non-blocking / I/O-bound vs CPU-bound，Q1–Q6 全數 review 通過）
+- **目前任務**：準備開始 **Week 2 — Mutex / Critical Section / Lock ownership**
 
 ## 已完成
 
@@ -27,15 +27,11 @@
 
 ## 進行中
 
-- [x] `docs/interview-questions.md` Q1–Q3 全部作答並 review 通過
-- [x] `examples/week1-blocking-demo.ts` 完成並驗證：CPU-bound 同步迴圈會讓 `setTimeout(fn, 0)` 延後執行
-- [x] Q5、Q6 作答並 review 通過（setTimeout 的保證範圍、blocking vs non-blocking 對其他 request 的影響）
-- [ ] Q4（為什麼 `await` 救不了 `fs.readFileSync`）——待自己用文字補完，導師已口頭講解過
+（無 — Week 1 已全數完成）
 
 ## 下一步（Resume Point）
 
-1. 把 `docs/interview-questions.md` 的 Q4 用自己的話寫完
-2. 回報導師 review，通過後正式進入 **Week 2 — Mutex / Critical Section / Lock ownership**
+開始 **Week 2 — Mutex / Critical Section / Lock ownership**。導師會先講解 Mutex 的概念，再給骨架讓你實作 `src/lock/` 底下的 Mutex，並刻意製造/修復一次因為缺少 lock 造成的 lost update。
 
 ## 待釐清 / 卡住的地方
 

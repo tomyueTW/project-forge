@@ -34,9 +34,9 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 **Review：** 對，抓到核心：SafeCounter 能成立的前提是「狀態完全活在單一 process 的記憶體裡」；只要狀態換成資料庫 / Redis / 任何跨網路的外部服務，read 跟 write 天生就各自要 `await`，SafeCounter 這個選項就不存在了。
 
 ## Q4. 為什麼在 `async function` 裡呼叫 `fs.readFileSync(...)`，`await` 救不了它、還是會卡住整條 Call Stack？
-**你的回答：**（待補——用自己的話寫一次，不要照抄上面導師的解釋）
+**你的回答：** `fs.readFileSync(...)` 回傳的是檔案內容本身，不是 Promise；因為它是同步函式，呼叫的當下就已經卡住 Call Stack、把檔案讀完才 return。等 `await` 拿到這個已經是最終結果的值時，讓出執行權的機會根本沒發生過。
 
-**Review：**
+**Review：** 對，這才是完整答案：不是「有沒有用 Promise」的問題，而是「這個函式本身有沒有被設計成非同步（會不會回傳一個 pending 的 Promise）」。`await` 只能等 Promise，等不到「壓根不是 Promise、已經同步做完的東西」。
 
 ## Q5. `setTimeout(fn, 0)` 到底保證了什麼、沒保證什麼？
 **你的回答：** `setTimeout(fn, 0)` 保證 0 毫秒後排進 Task Queue，但要等 Call Stack 空了才會真的執行。沒有在 0 秒後執行的原因是因為，要等 Call Stack 空了之後才執行 Task Queue。
