@@ -40,7 +40,14 @@ class LockedCounter {
     //   3. finally { this.lock.release() }
     // 注意：await simulateAsyncIO() 不要拿掉，這題的重點就是證明
     // 「臨界區裡面有 await 也沒關係，只要進臨界區前後有鎖保護」
-    throw new Error("TODO: implement LockedCounter.increment()");
+    await this.lock.acquire()
+    try {
+      const current = this.value;
+      await simulateAsyncIO();
+      this.value = current + 1;
+    } finally { 
+      this.lock.release() 
+    }
   }
 
   get current(): number {

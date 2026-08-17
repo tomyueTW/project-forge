@@ -31,3 +31,18 @@
   - `SafeCounter`：read-modify-write 中間不放任何 await，整段同步執行完才讓出控制權
 - 還沒搞懂的地方：
   - （持續更新）
+
+## Week 2 — Mutex / Critical Section / Lock Ownership
+
+- 學到什麼：
+  - Mutex 的核心概念：跟 `SafeCounter` 消除 await 不同，Mutex 允許臨界區內有 await，靠「持有鎖的人在裡面時，其他人只能排隊」來保證正確性
+  - Promise 的 `resolve` 可以被存到外部變數/陣列，在完全不同的時間、不同的程式碼位置才呼叫，呼叫時才會讓對應的 `await` 繼續往下跑（這是實作 queue-based Mutex 的核心技巧）
+  - `release()` 把鎖轉交給下一個排隊者時，要維持 `locked = true`（不能先設 false 再轉交），否則會有新的 `acquire()` 呼叫在轉交空檔中插隊搶到鎖，造成兩個人同時「以為自己持有鎖」
+  - TypeScript strict mode 下 `Array.shift()` 回傳型別是 `T | undefined`，型別系統無法從外部的 `length > 0` 檢查推論出安全性，需要用 `!`（non-null assertion）明確告知編譯器，且要能講出為什麼這裡保證安全
+- 弄壞了什麼、怎麼弄壞的：
+  - 一開始完全無法從零實作 Mutex（不熟悉「把 resolve 存起來晚點呼叫」這個 pattern），透過抽出一個最小的 `sleepUntilSignaled` 範例單獨理解這個技巧後才寫得出來
+- 怎麼修好的：
+  - `src/lock/mutex.ts`：`locked` boolean + `waiting` 佇列（存 resolve function），`acquire()` 沒鎖直接拿、有鎖就排隊；`release()` 優先把鎖轉交給佇列最前面的人，佇列空了才真的釋放
+  - `examples/week2-mutex.ts`：`LockedCounter` 用跟 `BuggyCounter` 完全相同的 read-await-write 結構，包上 `mutex.acquire()/release()`，100 次 increment 正確得到 100
+- 還沒搞懂的地方：
+  - （持續更新）

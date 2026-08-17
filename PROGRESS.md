@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 2 — Mutex / Critical Section / Lock ownership
-- **目前任務**：完成 `src/lock/mutex.ts` 的 TODO（acquire/release，佇列式互斥鎖），再完成 `examples/week2-mutex.ts` 的 `LockedCounter.increment()`
+- **週次**：Week 2 — Mutex 核心實作完成，`LockedCounter` 驗證通過（100/100）
+- **目前任務**：Q10、Q12 待自己補文字；決定要不要幫 Mutex 補正式的 Vitest 測試（`tests/unit/mutex.test.ts`），或先往下一個 Week 2 子主題（Semaphore / Read-Write Lock）
 
 ## 已完成
 
@@ -27,19 +27,15 @@
 
 ## 進行中
 
-- [ ] `src/lock/mutex.ts`：`acquire()` / `release()`（queue-based mutex，鎖持有權直接轉移給下一位排隊者）
-- [ ] `examples/week2-mutex.ts`：`LockedCounter.increment()`（跟 BuggyCounter 同樣結構，await 不拿掉，改用 mutex 保護）
-- [ ] 執行 `npx tsx examples/week2-mutex.ts`，驗證 `LockedCounter` actual=100
+- [x] `src/lock/mutex.ts`：`acquire()` / `release()` 完成，typecheck 通過（含 `!` non-null assertion 的正確使用）
+- [x] `examples/week2-mutex.ts`：`LockedCounter.increment()` 完成，實測 100/100，`npm test`／`npm run typecheck` 都過
+- [x] `docs/interview-questions.md` Q11 作答並 review 通過
+- [ ] Q10、Q12 待自己用文字補完
 
 ## 下一步（Resume Point）
 
-在 `forge-1-concurrency-toolkit/src/lock/mutex.ts` 完成 Mutex 的 TODO，然後在 `examples/week2-mutex.ts` 完成 `LockedCounter.increment()`，執行：
-
-```bash
-npx tsx examples/week2-mutex.ts
-```
-
-把 `[BuggyCounter (no lock)]` 和 `[LockedCounter (with Mutex)]` 兩行結果回報導師。
+1. 把 `docs/interview-questions.md` 的 Q10（Mutex 跟 SafeCounter 解法本質差異）、Q12（`!` non-null assertion 解決/隱藏了什麼）用自己的話寫完
+2. 跟導師討論：要不要先幫 Mutex 補正式 Vitest 測試（`tests/unit/`、`tests/concurrency/`），或直接接續 Week 2 剩下的子主題（Semaphore、Read-Write Lock，原始規格文件第 7 節）
 
 ## 待釐清 / 卡住的地方
 
