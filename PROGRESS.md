@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 1 已全部完成（Event Loop / Async-Sync / Race Condition / blocking-non-blocking / I/O-bound vs CPU-bound，Q1–Q6 全數 review 通過）
-- **目前任務**：準備開始 **Week 2 — Mutex / Critical Section / Lock ownership**
+- **週次**：Week 2 — Mutex / Critical Section / Lock ownership
+- **目前任務**：完成 `src/lock/mutex.ts` 的 TODO（acquire/release，佇列式互斥鎖），再完成 `examples/week2-mutex.ts` 的 `LockedCounter.increment()`
 
 ## 已完成
 
@@ -27,11 +27,19 @@
 
 ## 進行中
 
-（無 — Week 1 已全數完成）
+- [ ] `src/lock/mutex.ts`：`acquire()` / `release()`（queue-based mutex，鎖持有權直接轉移給下一位排隊者）
+- [ ] `examples/week2-mutex.ts`：`LockedCounter.increment()`（跟 BuggyCounter 同樣結構，await 不拿掉，改用 mutex 保護）
+- [ ] 執行 `npx tsx examples/week2-mutex.ts`，驗證 `LockedCounter` actual=100
 
 ## 下一步（Resume Point）
 
-開始 **Week 2 — Mutex / Critical Section / Lock ownership**。導師會先講解 Mutex 的概念，再給骨架讓你實作 `src/lock/` 底下的 Mutex，並刻意製造/修復一次因為缺少 lock 造成的 lost update。
+在 `forge-1-concurrency-toolkit/src/lock/mutex.ts` 完成 Mutex 的 TODO，然後在 `examples/week2-mutex.ts` 完成 `LockedCounter.increment()`，執行：
+
+```bash
+npx tsx examples/week2-mutex.ts
+```
+
+把 `[BuggyCounter (no lock)]` 和 `[LockedCounter (with Mutex)]` 兩行結果回報導師。
 
 ## 待釐清 / 卡住的地方
 
