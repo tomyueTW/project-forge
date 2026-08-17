@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 2 — Mutex 核心實作完成，`LockedCounter` 驗證通過（100/100）
-- **目前任務**：Q10、Q12 待自己補文字；決定要不要幫 Mutex 補正式的 Vitest 測試（`tests/unit/mutex.test.ts`），或先往下一個 Week 2 子主題（Semaphore / Read-Write Lock）
+- **週次**：Week 2 — Mutex 核心實作完成並驗收通過（Q10–Q12 全數 review 通過）
+- **目前任務**：決定要不要幫 Mutex 補正式的 Vitest 測試（`tests/unit/mutex.test.ts`），或先往下一個 Week 2 子主題（Semaphore / Read-Write Lock）
 
 ## 已完成
 
@@ -27,15 +27,11 @@
 
 ## 進行中
 
-- [x] `src/lock/mutex.ts`：`acquire()` / `release()` 完成，typecheck 通過（含 `!` non-null assertion 的正確使用）
-- [x] `examples/week2-mutex.ts`：`LockedCounter.increment()` 完成，實測 100/100，`npm test`／`npm run typecheck` 都過
-- [x] `docs/interview-questions.md` Q11、Q12 作答並 review 通過
-- [ ] Q10 需補強：還沒對比到 SafeCounter，且「Mutex 保證臨界區不中斷」的說法不準確，待重寫
+（無 — Mutex 這個子主題已全數完成）
 
 ## 下一步（Resume Point）
 
-1. 把 `docs/interview-questions.md` 的 Q10 重寫：`SafeCounter` 靠「消除」什麼解決問題？`LockedCounter` 靠「保護」什麼解決問題？
-2. 通過後跟導師討論：要不要先幫 Mutex 補正式 Vitest 測試（`tests/unit/`、`tests/concurrency/`），或直接接續 Week 2 剩下的子主題（Semaphore、Read-Write Lock，原始規格文件第 7 節）
+跟導師討論：要不要先幫 Mutex 補正式 Vitest 測試（`tests/unit/`、`tests/concurrency/`），或直接接續 Week 2 剩下的子主題（Semaphore、Read-Write Lock，原始規格文件第 7 節）
 
 ## 待釐清 / 卡住的地方
 
