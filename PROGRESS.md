@@ -29,13 +29,13 @@
 
 - [x] `src/lock/mutex.ts`：`acquire()` / `release()` 完成，typecheck 通過（含 `!` non-null assertion 的正確使用）
 - [x] `examples/week2-mutex.ts`：`LockedCounter.increment()` 完成，實測 100/100，`npm test`／`npm run typecheck` 都過
-- [x] `docs/interview-questions.md` Q11 作答並 review 通過
-- [ ] Q10、Q12 待自己用文字補完
+- [x] `docs/interview-questions.md` Q11、Q12 作答並 review 通過
+- [ ] Q10 需補強：還沒對比到 SafeCounter，且「Mutex 保證臨界區不中斷」的說法不準確，待重寫
 
 ## 下一步（Resume Point）
 
-1. 把 `docs/interview-questions.md` 的 Q10（Mutex 跟 SafeCounter 解法本質差異）、Q12（`!` non-null assertion 解決/隱藏了什麼）用自己的話寫完
-2. 跟導師討論：要不要先幫 Mutex 補正式 Vitest 測試（`tests/unit/`、`tests/concurrency/`），或直接接續 Week 2 剩下的子主題（Semaphore、Read-Write Lock，原始規格文件第 7 節）
+1. 把 `docs/interview-questions.md` 的 Q10 重寫：`SafeCounter` 靠「消除」什麼解決問題？`LockedCounter` 靠「保護」什麼解決問題？
+2. 通過後跟導師討論：要不要先幫 Mutex 補正式 Vitest 測試（`tests/unit/`、`tests/concurrency/`），或直接接續 Week 2 剩下的子主題（Semaphore、Read-Write Lock，原始規格文件第 7 節）
 
 ## 待釐清 / 卡住的地方
 

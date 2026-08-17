@@ -67,14 +67,19 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 - Parallelism：同一時間點真的有多個運算同時發生，需要多個 CPU 核心/實體執行緒。是唯一能加速 CPU-bound 任務的方法——運算沒有等待的空檔可以交錯，一個核心同一瞬間物理上只能算一件事。
 - 判斷方式：問「這段時間 CPU 是閒著在等，還是真的忙著在算？」閒著在等 → async/await + Event Loop（Concurrency）。真的忙著算 → `worker_threads` / 多 process / 多核心分工（Parallelism），單執行緒的非同步機制在這裡完全沒用。這是 Week 4 Worker Pool 決定「開幾個 worker」的核心依據。
 
+## Q9. 一個 task 同時包含 I/O-bound 和 CPU-bound 的部分（例如：查資料庫 → 圖片壓縮），該怎麼設計？
+**你的回答：** 這個 task 混合兩種，取決於哪一段耗時比較長。I/O-bound 用 Concurrency 處理，CPU-bound 用 worker_threads / 多 process / 多核心分工處理。
+
+**Review：** 對。補一個實務精確化：不需要把「整個 task」歸類成一種類型，而是**拆成幾段，各自用適合的策略**——DB 查詢那段留在主執行緒用 `await`（I/O-bound，等待不佔 CPU，Event Loop 這段空檔可以服務其他 request）；圖片壓縮那段特別抽出去丟給 `worker_threads`（CPU-bound，留在主執行緒同步跑會卡住整個 Event Loop，連跟這個 task 無關的其他使用者都會被拖累）。判斷單位是「這一段程式碼」，不是「這整個 task」。
+
 ---
 
 ## Mutex / Critical Section / Lock Ownership（Week 2）
 
 ## Q10. Mutex 解決的是什麼問題？跟 Week 1 的 `SafeCounter`（拿掉 await）比，解法有什麼本質上的不同？
-**你的回答：**（待補——用自己的話寫一次）
+**你的回答：** 互斥鎖 同一時間，只有一個「持有鎖的人」可以執行臨界區的程式碼，其他想進臨界區的人，必須排隊等，直到目前持有鎖的人「釋放」鎖。Mutex可以保證該臨界區的程式碼執行不中斷。
 
-**Review／筆記：** `SafeCounter` 是靠「消除讓出執行權的空檔」解決問題，但真實系統的 I/O await 通常拿不掉。Mutex 的解法完全不同：**讓出執行權沒關係，但持有鎖的人在臨界區內，其他人就是進不去，只能排隊等**。`LockedCounter` 的臨界區裡 `await simulateAsyncIO()` 完全沒拿掉，一樣拿到 100，證明了這一點。
+**Review：** 需補強。Mutex 是什麼、做什麼講對了，但（1）還沒對比到 `SafeCounter`；（2）「保證臨界區程式碼執行不中斷」不準確——`LockedCounter` 臨界區裡照樣有 `await`，一樣會讓出執行權，Event Loop 一樣能趁機處理不相干的事。Mutex 保證的是更窄的一件事：不會有「另一個也想拿同一把鎖的人」插進來。待補：`SafeCounter` 靠「消除」什麼解決問題？`LockedCounter` 靠「保護」什麼解決問題？
 
 ## Q11. `acquire()` 的兩個分支（沒人持有鎖 / 已經有人持有鎖）分別做什麼？
 **你的回答：** 沒有人持有鎖就是直接執行；已經有人持有鎖，是產生票等待有人按按鈕。
@@ -82,17 +87,9 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 **Review：** 對，用「票 / 按鈕」比喻抓到核心：沒人持有鎖 → 不用排隊，直接把 `locked` 設成 `true` 拿到鎖；已經有人持有 → 建立一個「還沒完成的 Promise」，把它的 `resolve`（按鈕）存進 `waiting` 佇列，`acquire()` 就卡在這裡，直到 `release()` 按下屬於它的那顆按鈕。
 
 ## Q12. TypeScript strict mode 下，`this.waiting.shift()` 明明在 `length > 0` 的分支裡，為什麼型別還是 `(() => void) | undefined`？`!`（non-null assertion）解決了什麼、又隱藏了什麼風險？
-**你的回答：**（待補）
+**你的回答：** 只是 TypeScript 沒辦法從「陣列長度 > 0」自動推論出「shift() 一定有值」，這是型別系統的侷限。用 ! 之前，要能講出「為什麼這裡保證不是 undefined」，講不出來就不該用。
 
-**Review／筆記：** TypeScript 的型別系統無法把「陣列長度檢查」跟「`shift()` 的回傳型別」關聯起來，所以仍標記為可能是 `undefined`。`!` 是在告訴編譯器「相信我，這裡邏輯上不可能是 undefined」，編譯後就消失、不影響執行期行為。風險：如果之後程式邏輯改了、這個不變量被破壞，`!` 不會提醒你，會在執行期直接丟出「呼叫 undefined」的錯誤——用之前要能講出「為什麼這裡保證不是 undefined」。
-
----
-
-
-## Q9. 一個 task 同時包含 I/O-bound 和 CPU-bound 的部分（例如：查資料庫 → 圖片壓縮），該怎麼設計？
-**你的回答：** 這個 task 混合兩種，取決於哪一段耗時比較長。I/O-bound 用 Concurrency 處理，CPU-bound 用 worker_threads / 多 process / 多核心分工處理。
-
-**Review：** 對。補一個實務精確化：不需要把「整個 task」歸類成一種類型，而是**拆成幾段，各自用適合的策略**——DB 查詢那段留在主執行緒用 `await`（I/O-bound，等待不佔 CPU，Event Loop 這段空檔可以服務其他 request）；圖片壓縮那段特別抽出去丟給 `worker_threads`（CPU-bound，留在主執行緒同步跑會卡住整個 Event Loop，連跟這個 task 無關的其他使用者都會被拖累）。判斷單位是「這一段程式碼」，不是「這整個 task」。
+**Review：** 通過。型別系統的侷限、`!` 的作用、使用前提，三個重點都講到了。
 
 ---
 
