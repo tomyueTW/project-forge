@@ -17,14 +17,10 @@ class BuggyCounter {
   private value = 0;
 
   async increment(): Promise<void> {
-    // TODO: 在這裡刻意製造 race condition
-    // 步驟：
-    //   1. 讀取 this.value，存到一個區域變數（模擬「讀」）
-    //   2. await simulateAsyncIO()（模擬讀寫中間有一次非同步 I/O，讓出執行權）
-    //   3. 把 this.value 設成「步驟 1 讀到的值 + 1」（模擬「寫」）
-    // 注意：第 3 步一定要用步驟 1 存下來的區域變數，不能重新讀 this.value，
-    // 否則就不是在重現 lost update 了。
-    throw new Error("TODO: implement BuggyCounter.increment()");
+    // 在這裡刻意製造 race condition
+    const current = this.value
+    await simulateAsyncIO() // 模擬資料庫讀取 or 其他微服務
+    this.value = current + 1
   }
 
   get current(): number {
@@ -36,10 +32,8 @@ class SafeCounter {
   private value = 0;
 
   async increment(): Promise<void> {
-    // TODO: 修好它 —— 讓「讀」和「寫」之間不會被其他 task 插隊。
-    // 提示：這一版不需要用到 simulateAsyncIO，重點是 read-modify-write
-    // 要在同一個「不讓出執行權」的區塊內完成。
-    throw new Error("TODO: implement SafeCounter.increment()");
+    const current = this.value
+    this.value = current + 1
   }
 
   get current(): number {

@@ -9,31 +9,31 @@
 
 - **階段**：Forge I — Concurrency Toolkit
 - **週次**：Week 1 — Event Loop / Async-Sync / 為什麼單執行緒也會 Race Condition
-- **目前任務**：完成 `forge-1-concurrency-toolkit/examples/week1-race-condition.ts` 的 TODO，驗證 lost update 是否如預測發生
+- **目前任務**：把 `docs/interview-questions.md` 的 Q3 用自己的文字補完，然後決定要不要進入 Week 2（Mutex）
 
 ## 已完成
 
 - [x] Git repo 初始化，GitHub public repo 建立並推上：https://github.com/tomyueTW/project-forge
 - [x] `PLAN.md` 導師協作計畫與各階段驗收 SOP 定案
 - [x] Forge I 專案骨架（TypeScript strict + Vitest + tsx，`npm test` / `npm run typecheck` 皆通過）
+- [x] `PROGRESS.md` 建立，作為跨裝置接續進度的唯一依據
 - [x] Week 1 概念講解：Call Stack / Event Loop / Microtask Queue vs Task Queue / async-await 的本質（yield point）
-- [x] 手動推導 2-task lost update 案例，結論正確：兩個 task 都在對方寫入前讀到舊值 0，最終 value=1，其中一次 increment 的效果消失
+- [x] 手動推導 2-task lost update 案例，結論正確
+- [x] `examples/week1-race-condition.ts` 完成並跑出結果：`BuggyCounter` LOST UPDATE（actual=1）、`SafeCounter` OK（actual=100）
+- [x] 排查並解決 Windows PowerShell 執行 npx 的問題（執行原則 / `.ps1` vs `.cmd`）
+- [x] 理解「精確等於 1」而非隨機值的原因（同步迴圈的讀 vs macrotask 的寫的排程順序）
+- [x] 理解 BuggyCounter 其實是常態（外部狀態的 read 本質上是 async），SafeCounter 才是特例
+- [x] `docs/interview-questions.md` Q1、Q2 已記錄並 review 通過
 
 ## 進行中
 
-- [ ] 完成 `BuggyCounter.increment()`：read → await → write（模擬會被插隊的 non-atomic read-modify-write）
-- [ ] 完成 `SafeCounter.increment()`：read-modify-write 中間不讓出執行權
-- [ ] 執行 `npx tsx examples/week1-race-condition.ts`，把 100-task 情境的實際輸出與自己的預測對照
+- [ ] `docs/interview-questions.md` Q3（為什麼 SafeCounter 在真實系統中是特例）——待用自己文字補完
+- [ ] 尚未決定：Week 1 是否還要補「blocking/non-blocking、I/O-bound vs CPU-bound」的講解，或直接進 Week 2 Mutex
 
 ## 下一步（Resume Point）
 
-在 `forge-1-concurrency-toolkit/` 目錄下執行：
-
-```bash
-npx tsx examples/week1-race-condition.ts
-```
-
-把兩行輸出（`BuggyCounter` 和 `SafeCounter`）貼給導師，對照先前手動推導的預測是否成立。
+1. 打開 `forge-1-concurrency-toolkit/docs/interview-questions.md`，把 Q3 用自己的話寫完（口頭已經答對過，重寫成文字）
+2. 回報導師，導師 review 後決定是否進入 Week 2（Mutex / Critical Section / Lock ownership）
 
 ## 待釐清 / 卡住的地方
 
