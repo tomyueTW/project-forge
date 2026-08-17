@@ -33,5 +33,20 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 
 **Review：** 對，抓到核心：SafeCounter 能成立的前提是「狀態完全活在單一 process 的記憶體裡」；只要狀態換成資料庫 / Redis / 任何跨網路的外部服務，read 跟 write 天生就各自要 `await`，SafeCounter 這個選項就不存在了。
 
+## Q4. 為什麼在 `async function` 裡呼叫 `fs.readFileSync(...)`，`await` 救不了它、還是會卡住整條 Call Stack？
+**你的回答：**（待補——用自己的話寫一次，不要照抄上面導師的解釋）
+
+**Review：**
+
+## Q5. `setTimeout(fn, 0)` 到底保證了什麼、沒保證什麼？
+**你的回答：** `setTimeout(fn, 0)` 保證 0 毫秒後排進 Task Queue，但要等 Call Stack 空了才會真的執行。沒有在 0 秒後執行的原因是因為，要等 Call Stack 空了之後才執行 Task Queue。
+
+**Review：** 對，精簡到位。「保證進 queue 的時機」跟「保證執行的時機」是兩件事，中間永遠隔著「Call Stack 是否已淨空」這個條件。
+
+## Q6. 同樣是讓伺服器「停頓 3 秒」，一段同步的 CPU-bound 忙碌迴圈，跟 `await sleep(3000)`（non-blocking），對其他使用者的 request 影響有什麼不同？為什麼？
+**你的回答：** 猜對結果（await 版不會卡住其他人），但一開始不確定原因。
+
+**Review：** 通過（口頭補完）。關鍵不是等待時間長短，而是等待期間 Call Stack 有沒有被佔用：同步迴圈整段時間佔著 Call Stack、Event Loop 完全動彈不得；`await sleep()` 呼叫後立刻把 Call Stack 讓出來，Event Loop 可以在等待期間自由處理其他 request。這也是 I/O-bound（等待為主，CPU 閒置，適合單執行緒高並發）vs CPU-bound（運算為主，CPU 全程忙碌，單執行緒會被拖垮，需要真正平行運算）這組區分的核心。
+
 ---
 

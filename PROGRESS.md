@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 1 — Event Loop / Async-Sync / 為什麼單執行緒也會 Race Condition（核心概念已完成）
-- **目前任務**：決定要不要補 blocking/non-blocking、I/O-bound vs CPU-bound 概念，或直接進 Week 2（Mutex）
+- **週次**：Week 1 — Event Loop / Async-Sync / 為什麼單執行緒也會 Race Condition（含 blocking/non-blocking、I/O-bound vs CPU-bound，全部完成）
+- **目前任務**：`docs/interview-questions.md` Q4 待自己補完文字，之後就可以正式進入 Week 2（Mutex）
 
 ## 已完成
 
@@ -27,11 +27,15 @@
 
 ## 進行中
 
-- [x] `docs/interview-questions.md` Q1、Q2、Q3 全部作答並 review 通過 —— Week 1 核心概念（Event Loop / async-await 本質 / race condition 為何發生 / 為何 BuggyCounter 是常態）驗收完成
+- [x] `docs/interview-questions.md` Q1–Q3 全部作答並 review 通過
+- [x] `examples/week1-blocking-demo.ts` 完成並驗證：CPU-bound 同步迴圈會讓 `setTimeout(fn, 0)` 延後執行
+- [x] Q5、Q6 作答並 review 通過（setTimeout 的保證範圍、blocking vs non-blocking 對其他 request 的影響）
+- [ ] Q4（為什麼 `await` 救不了 `fs.readFileSync`）——待自己用文字補完，導師已口頭講解過
 
 ## 下一步（Resume Point）
 
-決定 Week 1 是否要補「blocking/non-blocking、I/O-bound vs CPU-bound」這兩個原文件第 5.1 節提到、但還沒講的詞彙，還是直接進入 **Week 2 — Mutex / Critical Section / Lock ownership**。
+1. 把 `docs/interview-questions.md` 的 Q4 用自己的話寫完
+2. 回報導師 review，通過後正式進入 **Week 2 — Mutex / Critical Section / Lock ownership**
 
 ## 待釐清 / 卡住的地方
 
