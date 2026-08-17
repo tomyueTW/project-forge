@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 1 — Event Loop / Async-Sync / 為什麼單執行緒也會 Race Condition
-- **目前任務**：把 `docs/interview-questions.md` 的 Q3 用自己的文字補完，然後決定要不要進入 Week 2（Mutex）
+- **週次**：Week 1 — Event Loop / Async-Sync / 為什麼單執行緒也會 Race Condition（核心概念已完成）
+- **目前任務**：決定要不要補 blocking/non-blocking、I/O-bound vs CPU-bound 概念，或直接進 Week 2（Mutex）
 
 ## 已完成
 
@@ -27,13 +27,11 @@
 
 ## 進行中
 
-- [ ] `docs/interview-questions.md` Q3（為什麼 SafeCounter 在真實系統中是特例）——待用自己文字補完
-- [ ] 尚未決定：Week 1 是否還要補「blocking/non-blocking、I/O-bound vs CPU-bound」的講解，或直接進 Week 2 Mutex
+- [x] `docs/interview-questions.md` Q1、Q2、Q3 全部作答並 review 通過 —— Week 1 核心概念（Event Loop / async-await 本質 / race condition 為何發生 / 為何 BuggyCounter 是常態）驗收完成
 
 ## 下一步（Resume Point）
 
-1. 打開 `forge-1-concurrency-toolkit/docs/interview-questions.md`，把 Q3 用自己的話寫完（口頭已經答對過，重寫成文字）
-2. 回報導師，導師 review 後決定是否進入 Week 2（Mutex / Critical Section / Lock ownership）
+決定 Week 1 是否要補「blocking/non-blocking、I/O-bound vs CPU-bound」這兩個原文件第 5.1 節提到、但還沒講的詞彙，還是直接進入 **Week 2 — Mutex / Critical Section / Lock ownership**。
 
 ## 待釐清 / 卡住的地方
 

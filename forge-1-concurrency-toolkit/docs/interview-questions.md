@@ -28,9 +28,10 @@
 **Review：** 對，而且點出了關鍵：這不是「機率性」的 race condition，是這段程式碼結構下**可重現、可預測**的結果（同步迴圈先跑完，才輪到 macrotask）。這跟很多人對 race condition「隨機、難重現」的刻板印象不同，值得記住。
 
 ## Q3. 為什麼 `SafeCounter`（read-modify-write 中間不放 await）在真實系統中反而是特例，不是常態？
-**你的回答：** （待補——你在對話中已經口頭答對，稍後自己用文字重寫一次）
+**你的回答：** 因為實務上來說根本沒有 SafeCounter 的寫法，因為：
+SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀寫資料庫就需要兩次wait「 read 是 await db.query(...)，write 是 await db.query(...)」
 
-**Review：**
+**Review：** 對，抓到核心：SafeCounter 能成立的前提是「狀態完全活在單一 process 的記憶體裡」；只要狀態換成資料庫 / Redis / 任何跨網路的外部服務，read 跟 write 天生就各自要 `await`，SafeCounter 這個選項就不存在了。
 
 ---
 
