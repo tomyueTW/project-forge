@@ -48,5 +48,29 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 
 **Review：** 通過（口頭補完）。關鍵不是等待時間長短，而是等待期間 Call Stack 有沒有被佔用：同步迴圈整段時間佔著 Call Stack、Event Loop 完全動彈不得；`await sleep()` 呼叫後立刻把 Call Stack 讓出來，Event Loop 可以在等待期間自由處理其他 request。這也是 I/O-bound（等待為主，CPU 閒置，適合單執行緒高並發）vs CPU-bound（運算為主，CPU 全程忙碌，單執行緒會被拖垮，需要真正平行運算）這組區分的核心。
 
+## Q7. I/O-bound 與 CPU-bound 的本質差異是什麼？Node.js 底層實際上怎麼處理這兩種情況？
+**你的回答：**（見下方導師整理，之後可以用自己的話重寫一次加深記憶）
+
+**Review／筆記：**
+- 判準不是「有沒有 `await`」，而是**瓶頸資源在哪裡**：I/O-bound 的瓶頸在 CPU 外部（磁碟、網路延遲、資料庫/其他服務的回應時間），CPU 發出請求後只能等，等待不消耗 CPU；CPU-bound 的瓶頸是 CPU 本身的運算速度，沒有「外部依賴」，從頭到尾都在真的算。
+- Node.js 底層其實有兩種不同的「非同步」機制，對 JS 程式碼看起來一樣（都回傳 Promise），但實作不同：
+  - 網路 I/O：直接交給作業系統核心的非同步機制（epoll / kqueue / IOCP），不需要額外執行緒，單一 Node 執行緒可以撐住幾萬個連線。
+  - 檔案系統 I/O、部分 crypto/zlib：作業系統沒有原生非同步介面，Node（libuv）用一個背景執行緒池（預設 4 條）偷偷處理。
+  - CPU-bound 運算（你自己寫的迴圈/排序/雜湊/圖片處理）：完全沒有背景執行緒池可用，只能在單一 JS 主執行緒上跑，沒有任何機制能讓它非同步化——因為它不是在「等誰回應」，沒有「別的地方」可以挪。
+- 結論：`await` 能救的前提是背後有真正的非同步機制（OS 核心或 libuv 執行緒池）幫你把工作挪走；CPU-bound 運算沒有這個「別的地方」，所以 `await` 永遠救不了它。
+
+## Q8. Concurrency（並發）與 Parallelism（平行）的差異是什麼？為什麼 I/O-bound 任務適合 Concurrency、CPU-bound 任務需要 Parallelism？
+**你的回答：**（見下方導師整理）
+
+**Review／筆記：**
+- Concurrency：同一時間段內處理多個任務的「進度」，靠的是交錯執行（任務 A 等待時切去做任務 B），單一執行緒就辦得到（Event Loop）。只對 I/O-bound 任務有效，因為「等待」不佔用 CPU，可以交錯。
+- Parallelism：同一時間點真的有多個運算同時發生，需要多個 CPU 核心/實體執行緒。是唯一能加速 CPU-bound 任務的方法——運算沒有等待的空檔可以交錯，一個核心同一瞬間物理上只能算一件事。
+- 判斷方式：問「這段時間 CPU 是閒著在等，還是真的忙著在算？」閒著在等 → async/await + Event Loop（Concurrency）。真的忙著算 → `worker_threads` / 多 process / 多核心分工（Parallelism），單執行緒的非同步機制在這裡完全沒用。這是 Week 4 Worker Pool 決定「開幾個 worker」的核心依據。
+
+## Q9. 一個 task 同時包含 I/O-bound 和 CPU-bound 的部分（例如：查資料庫 → 圖片壓縮），該怎麼設計？
+**你的回答：** 這個 task 混合兩種，取決於哪一段耗時比較長。I/O-bound 用 Concurrency 處理，CPU-bound 用 worker_threads / 多 process / 多核心分工處理。
+
+**Review：** 對。補一個實務精確化：不需要把「整個 task」歸類成一種類型，而是**拆成幾段，各自用適合的策略**——DB 查詢那段留在主執行緒用 `await`（I/O-bound，等待不佔 CPU，Event Loop 這段空檔可以服務其他 request）；圖片壓縮那段特別抽出去丟給 `worker_threads`（CPU-bound，留在主執行緒同步跑會卡住整個 Event Loop，連跟這個 task 無關的其他使用者都會被拖累）。判斷單位是「這一段程式碼」，不是「這整個 task」。
+
 ---
 
