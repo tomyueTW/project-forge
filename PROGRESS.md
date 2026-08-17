@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 2 — Mutex 核心實作完成並驗收通過（Q10–Q12 全數 review 通過）
-- **目前任務**：決定要不要幫 Mutex 補正式的 Vitest 測試（`tests/unit/mutex.test.ts`），或先往下一個 Week 2 子主題（Semaphore / Read-Write Lock）
+- **週次**：Week 2 — Mutex 概念與實作完成，現在補正式 Vitest 測試
+- **目前任務**：完成 `tests/unit/mutex.test.ts` 和 `tests/concurrency/mutex.test.ts` 的 TODO
 
 ## 已完成
 
@@ -27,11 +27,12 @@
 
 ## 進行中
 
-（無 — Mutex 這個子主題已全數完成）
+- [ ] `tests/unit/mutex.test.ts`：3 個 TODO（立即拿鎖、第二個 acquire 卡住直到 release、FIFO 順序）
+- [ ] `tests/concurrency/mutex.test.ts`：`LockedCounter.increment()` 補完 + 2 個斷言（BuggyCounter 應該失敗、LockedCounter 應該等於 100）
 
 ## 下一步（Resume Point）
 
-跟導師討論：要不要先幫 Mutex 補正式 Vitest 測試（`tests/unit/`、`tests/concurrency/`），或直接接續 Week 2 剩下的子主題（Semaphore、Read-Write Lock，原始規格文件第 7 節）
+完成 `tests/unit/mutex.test.ts` 和 `tests/concurrency/mutex.test.ts` 的 TODO，執行 `npm test` 確認全部通過，回報導師。之後接續 Week 2 剩下的子主題（Semaphore、Read-Write Lock，原始規格文件第 7 節）。
 
 ## 待釐清 / 卡住的地方
 
