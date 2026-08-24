@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 2 — Mutex 概念與實作完成，`tests/unit/mutex.test.ts` 三題全數完成並通過
-- **目前任務**：完成 `tests/concurrency/mutex.test.ts` 的 TODO（`LockedCounter.increment()` + 2 個斷言）
+- **週次**：Week 2 — Mutex 完整收尾（概念、實作、`tests/unit/`、`tests/concurrency/` 全部完成，`npm test` 6/6 通過、typecheck 乾淨）
+- **目前任務**：決定要不要接續 Week 2 剩下的子主題（Semaphore / Read-Write Lock，原始規格文件第 7 節）
 
 ## 已完成
 
@@ -27,12 +27,11 @@
 
 ## 進行中
 
-- [x] `tests/unit/mutex.test.ts`：3 題全部完成並通過（立即拿鎖、第二個 acquire 卡住直到 release、FIFO 順序），typecheck 也過
-- [ ] `tests/concurrency/mutex.test.ts`：`LockedCounter.increment()` 補完 + 2 個斷言（BuggyCounter 應該失敗、LockedCounter 應該等於 100）
+（無 — Mutex 全部完成：`src/lock/mutex.ts`、`examples/week2-mutex.ts`、`tests/unit/mutex.test.ts`、`tests/concurrency/mutex.test.ts`、`docs/interview-questions.md` Q10–Q12）
 
 ## 下一步（Resume Point）
 
-完成 `tests/concurrency/mutex.test.ts` 的 TODO，執行 `npm test` 確認全部通過，回報導師。之後接續 Week 2 剩下的子主題（Semaphore、Read-Write Lock，原始規格文件第 7 節）。
+跟導師討論要不要接續 Week 2 剩下的子主題：**Semaphore**（限制同時最多 N 個 task，原始規格文件第 7 節）與 **Read-Write Lock**（multiple readers / exclusive writer / writer starvation）。
 
 ## 待釐清 / 卡住的地方
 

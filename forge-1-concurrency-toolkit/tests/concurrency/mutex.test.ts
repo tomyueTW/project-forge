@@ -25,8 +25,14 @@ class LockedCounter {
   private lock = new Mutex();
 
   async increment(): Promise<void> {
-    // TODO：跟 examples/week2-mutex.ts 的 LockedCounter 一樣的邏輯，自己重打一次
-    throw new Error("TODO: implement LockedCounter.increment()");
+    await this.lock.acquire()
+    try {
+      const current = this.value;
+      await simulateAsyncIO();
+      this.value = current + 1;
+    } finally { 
+      this.lock.release() 
+    }
   }
 
   get current(): number {
@@ -40,9 +46,9 @@ describe("Mutex — race condition reproduction and fix", () => {
     const tasks = Array.from({ length: 100 }, () => counter.increment());
     await Promise.all(tasks);
 
-    // TODO: 斷言 counter.current !== 100
-    // （這個測試「通過」代表成功重現了 bug；如果哪天 counter.current === 100，
-    //   反而代表 JS runtime 的排程行為變了，這個測試會失敗，提醒你重新檢視假設）
+    // 這個測試「通過」代表成功重現了 bug；如果哪天 counter.current === 100，
+    // 反而代表 JS runtime 的排程行為變了，這個測試會失敗，提醒你重新檢視假設
+    expect(counter.current).not.toBe(100);
   });
 
   it("LockedCounter reaches exactly 100 under 100 concurrent increments", async () => {
@@ -50,6 +56,6 @@ describe("Mutex — race condition reproduction and fix", () => {
     const tasks = Array.from({ length: 100 }, () => counter.increment());
     await Promise.all(tasks);
 
-    // TODO: 斷言 counter.current === 100
+    expect(counter.current).toBe(100);
   });
 });
