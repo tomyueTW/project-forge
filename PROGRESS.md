@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 2 — Mutex 完整收尾（概念、實作、`tests/unit/`、`tests/concurrency/` 全部完成，`npm test` 6/6 通過、typecheck 乾淨）
-- **目前任務**：決定要不要接續 Week 2 剩下的子主題（Semaphore / Read-Write Lock，原始規格文件第 7 節）
+- **週次**：Week 2 — Mutex 完整收尾，現在進行 Semaphore
+- **目前任務**：完成 `src/lock/semaphore.ts` 的 TODO（跟 Mutex 同一套 pattern，把 boolean 換成計數），再完成 `examples/week2-semaphore.ts` 的驗證
 
 ## 已完成
 
@@ -27,11 +27,18 @@
 
 ## 進行中
 
-（無 — Mutex 全部完成：`src/lock/mutex.ts`、`examples/week2-mutex.ts`、`tests/unit/mutex.test.ts`、`tests/concurrency/mutex.test.ts`、`docs/interview-questions.md` Q10–Q12）
+- [ ] `src/lock/semaphore.ts`：`constructor` / `acquire()` / `release()`（跟 Mutex 相同的 queue-based pattern，locked boolean 換成 available 計數）
+- [ ] `examples/week2-semaphore.ts`：驗證 20 個 task、容量 3 的 Semaphore，同時執行人數 high-water mark 不超過 3
 
 ## 下一步（Resume Point）
 
-跟導師討論要不要接續 Week 2 剩下的子主題：**Semaphore**（限制同時最多 N 個 task，原始規格文件第 7 節）與 **Read-Write Lock**（multiple readers / exclusive writer / writer starvation）。
+完成 `src/lock/semaphore.ts` 的 TODO，執行：
+
+```bash
+npx tsx examples/week2-semaphore.ts
+```
+
+確認 `maxActive <= 3`。之後接續 **Read-Write Lock**（multiple readers / exclusive writer / writer starvation，原始規格文件第 7 節）。
 
 ## 待釐清 / 卡住的地方
 
