@@ -93,3 +93,12 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 
 ---
 
+## Semaphore（Week 2）
+
+## Q13. Semaphore 跟 Mutex 的關係是什麼？`release()` 為什麼在「佇列有人排隊」時完全不動 `available`，只有「佇列空了」才 `available++`？
+**你的回答：** `new Semaphore(1)` 等價於 Mutex。佇列有人排隊時，A 會直接把名額轉交給下一位，中間不會有空檔（`this.available` 完全沒被動到）。
+
+**Review：** 對。補一句「為什麼這樣設計」：`available` 這個數字只反映「真正沒人排隊、沒人使用」的名額數。如果佇列有人時還 `available++`，等於製造出一個「其實已經內定給下一位」的假空名額，會讓一個全新的 `acquire()` 呼叫有機會插隊搶走它，導致同時在臨界區的人數超過容量上限。
+
+---
+

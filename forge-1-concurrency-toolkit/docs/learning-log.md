@@ -46,3 +46,18 @@
   - `examples/week2-mutex.ts`：`LockedCounter` 用跟 `BuggyCounter` 完全相同的 read-await-write 結構，包上 `mutex.acquire()/release()`，100 次 increment 正確得到 100
 - 還沒搞懂的地方：
   - （持續更新）
+- 補充（正式測試）：`tests/unit/mutex.test.ts`（立即拿鎖、第二個 acquire 卡住直到 release、FIFO 順序）與 `tests/concurrency/mutex.test.ts`（100 併發下 BuggyCounter 失敗／LockedCounter 正確）全部完成，用「事件順序陣列」而非量時間來驗證非同步行為
+
+## Week 2 — Semaphore
+
+- 學到什麼：
+  - Semaphore 是 Mutex 的推廣：`new Semaphore(1)` 等價於 Mutex，把「boolean 持有狀態」換成「數字名額（`available`）」
+  - `release()` 的關鍵不變量：佇列有人排隊時，名額是直接從上一個持有者手上轉交給下一位，`available` 完全不動，中間不會有「暫時無主」的空檔；只有佇列真的空了，`available++` 才安全
+  - 如果佇列有人時還誤把 `available++`，會製造一個假的空名額，讓全新的 `acquire()` 呼叫插隊搶走它，導致同時在臨界區的人數超過容量上限
+- 弄壞了什麼、怎麼弄壞的：
+  - 打完 `resolve` 時編輯器自動 import 了 `node:dns` 的 `resolve`（同名但完全不相干），沒有造成執行期錯誤（被區域參數 `resolve` 遮蔽），但學到打字後要檢查編輯器自動加的 import
+- 怎麼修好的：
+  - `src/lock/semaphore.ts`：`available` 計數 + `waiting` 佇列，`acquire()` 有名額直接拿、沒名額排隊；`release()` 優先轉交名額給佇列最前面的人，佇列空了才真的 `available++`
+  - `examples/week2-semaphore.ts`：20 個 task 搶容量 3 的 Semaphore，追蹤 high-water mark，驗證同時人數精確等於 3、沒有超過
+- 還沒搞懂的地方：
+  - （持續更新）
