@@ -61,3 +61,19 @@
   - `examples/week2-semaphore.ts`：20 個 task 搶容量 3 的 Semaphore，追蹤 high-water mark，驗證同時人數精確等於 3、沒有超過
 - 還沒搞懂的地方：
   - （持續更新）
+
+## Week 2 — Read-Write Lock
+
+- 學到什麼：
+  - RWLock 允許多個 reader 同時持有（reader 之間不衝突），只有 writer 需要獨佔——比 Mutex 更適合讀多寫少的場景
+  - Writer starvation 的根因：如果「有沒有 writer 在寫」是 reader 能不能進去的唯一條件，源源不絕的新 reader 會讓「目前沒有 active reader」這個 writer 需要的條件永遠不成立
+  - 防止 writer starvation 的解法：`acquireRead()` 除了檢查 `!writerActive`，還要檢查 `waitingWriters.length === 0`——只要有 writer 在排隊，新 reader 就必須跟著排隊，不能插到 writer 前面
+  - `releaseWrite()` 要優先叫醒排隊的 writer、只有沒有 writer 排隊時才叫醒所有排隊的 reader——如果反過來，starvation 問題會換一個地方重新發生
+- 弄壞了什麼、怎麼弄壞的：
+  - `releaseWrite()` 用 `forEach` 把所有排隊的 reader 叫醒，但沒有清空 `waitingReaders` 陣列（`forEach` 只拜訪、不像 `shift()` 會真的移除元素）。導致舊的（早就叫醒過的）resolve 函式殘留在陣列裡，下次觸發同一個分支時被重複呼叫，`this.activeReaders++` 沒有保護、被灌水，長期下來 `activeReaders` 永遠回不到 0，`acquireWrite()` 的 `activeReaders === 0` 條件永遠不成立，變成另一種 writer 永久卡死
+  - 又踩到一次 `resolve` 打字時被編輯器自動 import 成 `node:dns` 的問題（第二次遇到，這次自己認出來了）
+- 怎麼修好的：
+  - 把 `forEach` 改成 `while (this.waitingReaders.length > 0) { const next = this.waitingReaders.shift()!; next(); this.activeReaders++; }`，跟 Mutex/Semaphore 的 `release()` 用同一套「用 `shift()` 清空佇列」的手法
+  - `examples/week2-read-write-lock.ts`：驗證 20 個並發 reader、writer 完全不與 active reader 重疊、writer 即使在持續有新 reader 抵達的情況下依然能完成（沒有 starvation）
+- 還沒搞懂的地方：
+  - （持續更新）

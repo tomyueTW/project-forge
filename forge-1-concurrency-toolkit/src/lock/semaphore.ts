@@ -15,9 +15,6 @@
  *   }
  */
 export class Semaphore {
-  // TODO: 你需要：
-  //   1. 一個數字，記錄「還剩幾個名額」（建構子傳進來的 N 就是初始值）
-  //   2. 一個等待佇列（跟 Mutex 一樣，存 resolve function）
   private available: number;
   private waiting: Array<() => void> = [];
 

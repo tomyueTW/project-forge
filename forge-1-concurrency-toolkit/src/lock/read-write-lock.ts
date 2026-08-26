@@ -1,3 +1,4 @@
+
 /**
  * ReadWriteLock — 多個 reader 可以同時持有，writer 需要獨佔。
  *
@@ -17,38 +18,49 @@ export class ReadWriteLock {
   private waitingWriters: Array<() => void> = [];
 
   async acquireRead(): Promise<void> {
-    // TODO：
-    //   如果 !this.writerActive && this.waitingWriters.length === 0
-    //     → 直接拿到：this.activeReaders++，return
-    //   否則 → 排隊：new Promise((resolve) => { this.waitingReaders.push(resolve) })
-    throw new Error("TODO: implement ReadWriteLock.acquireRead()");
+    if (!this.writerActive && this.waitingWriters.length === 0) {
+      this.activeReaders++;
+      return;
+    }
+
+    return new Promise((resolve) => {
+      this.waitingReaders.push(resolve)
+    })
   }
 
   releaseRead(): void {
-    // TODO：
-    //   this.activeReaders--
-    //   如果 this.activeReaders === 0 && this.waitingWriters.length > 0：
-    //     從 waitingWriters 拿出最前面的人，設定 this.writerActive = true，叫醒他
-    throw new Error("TODO: implement ReadWriteLock.releaseRead()");
+    this.activeReaders--;
+
+    if (this.activeReaders === 0 && this.waitingWriters.length > 0) {
+      const next = this.waitingWriters.shift()!;
+      next();
+      this.writerActive = true;
+    }
   }
 
   async acquireWrite(): Promise<void> {
-    // TODO：
-    //   如果 !this.writerActive && this.activeReaders === 0
-    //     → 直接拿到：this.writerActive = true，return
-    //   否則 → 排隊：new Promise((resolve) => { this.waitingWriters.push(resolve) })
-    throw new Error("TODO: implement ReadWriteLock.acquireWrite()");
+    if (!this.writerActive && this.activeReaders === 0) {
+      this.writerActive = true;
+      return;
+    }
+
+    return new Promise((resolve) => {
+      this.waitingWriters.push(resolve) 
+    })
   }
 
   releaseWrite(): void {
-    // TODO：
-    //   this.writerActive = false
-    //   如果 this.waitingWriters.length > 0：
-    //     從 waitingWriters 拿出最前面的人，設定 this.writerActive = true，叫醒他
-    //   否則（沒有 writer 在排隊）：
-    //     把 waitingReaders 裡「所有」排隊的 reader 全部叫醒
-    //     （提示：用一個迴圈，或先把整個陣列清空存到區域變數再逐一呼叫；
-    //      別忘了把每個被叫醒的 reader 算進 this.activeReaders）
-    throw new Error("TODO: implement ReadWriteLock.releaseWrite()");
+    this.writerActive = false
+    if (this.waitingWriters.length > 0) {
+      const next = this.waitingWriters.shift()!;
+      next();
+      this.writerActive = true;
+    } else {
+      while (this.waitingReaders.length > 0) {
+        const next = this.waitingReaders.shift()!;
+        next();
+        this.activeReaders++;
+      }
+    }
   }
 }

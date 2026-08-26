@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 2 — Mutex、Semaphore 完成，現在進行 Read-Write Lock
-- **目前任務**：完成 `src/lock/read-write-lock.ts` 的 4 個 TODO（`acquireRead` / `releaseRead` / `acquireWrite` / `releaseWrite`）
+- **週次**：Week 2 — Mutex、Semaphore、Read-Write Lock 全部實作完成，`npm test` 6/6 通過、typecheck 乾淨
+- **目前任務**：Q14、Q16 待自己補文字；決定 Week 2 是否收尾（面試考題彙整 + 學習成果說明）或先進 Week 3（Queue / Worker Pool）
 
 ## 已完成
 
@@ -27,18 +27,15 @@
 
 ## 進行中
 
-- [ ] `src/lock/read-write-lock.ts`：`acquireRead()` / `releaseRead()` / `acquireWrite()` / `releaseWrite()`（骨架註解有寫演算法步驟，含防止 writer starvation 的規則）
-- [ ] `examples/week2-read-write-lock.ts`：驗證多 reader 並存、writer 獨佔不重疊、writer 最終不會被餓死
+- [x] `src/lock/read-write-lock.ts` 完成並修正一個真的踩到的 bug（`releaseWrite()` 用 `forEach` 沒清空 `waitingReaders`，改成 `shift()` 迴圈）
+- [x] `examples/week2-read-write-lock.ts` 三項驗證全過（reader 並存、writer 獨佔不重疊、writer 不會 starvation）
+- [x] `docs/interview-questions.md` Q15 作答並 review 通過
+- [ ] Q14、Q16 待自己用文字補完
 
 ## 下一步（Resume Point）
 
-完成 `src/lock/read-write-lock.ts` 的 4 個 TODO，執行：
-
-```bash
-npx tsx examples/week2-read-write-lock.ts
-```
-
-確認三行輸出都符合預期（reader 數 > 1、writer 完成、無 overlap）。
+1. 把 `docs/interview-questions.md` 的 Q14（RWLock vs Mutex 核心差異）、Q16（`shift()` vs `forEach` 清空佇列的 bug）用自己的話寫完
+2. 跟導師討論：Week 2 要不要先做收尾（面試考題彙整複習 + 學習成果說明），還是直接進 **Week 3 — Queue / Worker Pool**
 
 ## 待釐清 / 卡住的地方
 
