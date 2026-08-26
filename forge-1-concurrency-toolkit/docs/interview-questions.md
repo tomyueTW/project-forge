@@ -105,9 +105,9 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 ## Read-Write Lock（Week 2）
 
 ## Q14. Read-Write Lock 跟 Mutex 的核心差異是什麼？為什麼讀多寫少的場景用 Mutex 會浪費？
-**你的回答：**（待補——用自己的話寫一次）
+**你的回答：** 因為如果大部分的時間都在讀取的話，其實可以讓所有的讀取連線都直接讀取，不需要刻意等待。RWLock 允許多個 reader 同時持有，只有 writer 需要獨佔。
 
-**Review／筆記：** Mutex 假設「只要有人用，其他人就不能碰」，但 read 之間彼此不衝突（沒人在改資料，大家讀到的都是同一份）。RWLock 允許多個 reader 同時持有，只有 writer 需要獨佔（讀寫、寫寫都會衝突）。如果讀多寫少的資源用 Mutex 保護，同時間永遠只有 1 個 reader 能進，其他全部白白排隊，完全沒必要。
+**Review：** 通過。核心差異（reader 可並存、writer 需獨佔）跟為什麼讀多寫少場景用 Mutex 浪費，兩個重點都講到了。
 
 ## Q15. `releaseWrite()` 沒有排隊的 writer 時，為什麼優先叫醒**所有**排隊的 reader，而不是只叫醒一個？如果反過來，`releaseWrite()` 也優先叫醒 reader（而非 writer），會發生什麼問題？
 **你的回答：** （writer 優先的部分）因為 writer 會永遠在等 reader。
@@ -115,9 +115,9 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 **Review：** 對，這就是 writer starvation 換了個地方發生：如果優先叫醒 reader，只要新 reader 源源不絕地抵達、持續補進佇列，writer 就可能永遠排在 reader 隊伍後面，永遠輪不到——跟 `acquireRead()` 沒有防插隊機制時是同一個根本問題，只是發生的位置不同。（一次叫醒所有 reader 的原因：reader 之間互不衝突，沒有必要一個一個排隊進去，全部同時放行才能發揮 RWLock 的優勢。）
 
 ## Q16. `releaseWrite()` 用迴圈把 `waitingReaders` 裡的人全部叫醒時，為什麼一定要用 `shift()` 把佇列清空，而不能用 `forEach` 只是「拜訪過一遍」就好？不清空會造成什麼具體的 bug？
-**你的回答：**（待補——這是你親手踩過的坑，用自己的話寫一次）
+**你的回答：** 已經被叫醒、早就讀完的舊 reader，被重複算了一次。
 
-**Review／筆記：** `forEach` 只是照順序拜訪每個元素，完全不會移除陣列內容；`shift()` 除了回傳元素，還會把它從陣列裡真的移除。如果用 `forEach` 叫醒所有排隊的 reader 卻不清空 `waitingReaders`，下次有新 reader 排進來、再次觸發這個分支時，會把舊的（早就叫醒過、早就讀完、早就呼叫過 `releaseRead()` 的）resolve 函式也一起再呼叫一次——`next()` 呼叫在已 resolve 的 Promise 上不會報錯，但 `this.activeReaders++` 沒有這種保護，還是會照樣執行，導致 `activeReaders` 被持續灌水。長期下來 `activeReaders` 永遠不會回到 0，`acquireWrite()` 要求的 `activeReaders === 0` 永遠不成立，writer 會被永久卡死——反而製造出另一種 starvation。
+**Review：** 通過，抓到了核心（舊 reader 被重複算）。補完整條因果鏈：`forEach` 只拜訪、不移除陣列內容，`shift()` 才會真的清空。不清空的話，下次觸發同一分支時，早就叫醒過、早就讀完、早就呼叫過 `releaseRead()` 的舊 resolve 函式會被再呼叫一次——`next()` 對已 resolve 的 Promise 呼叫不會報錯，但 `this.activeReaders++` 沒有這層保護，照樣執行，`activeReaders` 被持續灌水，永遠回不到 0，`acquireWrite()` 的 `activeReaders === 0` 永遠不成立，writer 永久卡死。
 
 ---
 

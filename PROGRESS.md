@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 2 — Mutex、Semaphore、Read-Write Lock 全部實作完成，`npm test` 6/6 通過、typecheck 乾淨
-- **目前任務**：Q14、Q16 待自己補文字；決定 Week 2 是否收尾（面試考題彙整 + 學習成果說明）或先進 Week 3（Queue / Worker Pool）
+- **週次**：Week 2 全部完成（Mutex、Semaphore、Read-Write Lock，Q1–Q16 全數 review 通過）
+- **目前任務**：決定要不要先做 Week 2 收尾（複習 + 學習成果說明），或直接進 **Week 3 — Queue / Worker Pool**
 
 ## 已完成
 
@@ -27,15 +27,11 @@
 
 ## 進行中
 
-- [x] `src/lock/read-write-lock.ts` 完成並修正一個真的踩到的 bug（`releaseWrite()` 用 `forEach` 沒清空 `waitingReaders`，改成 `shift()` 迴圈）
-- [x] `examples/week2-read-write-lock.ts` 三項驗證全過（reader 並存、writer 獨佔不重疊、writer 不會 starvation）
-- [x] `docs/interview-questions.md` Q15 作答並 review 通過
-- [ ] Q14、Q16 待自己用文字補完
+（無 — Week 2 全部完成：Mutex、Semaphore、Read-Write Lock 三個 primitive，`docs/interview-questions.md` Q1–Q16 全數 review 通過）
 
 ## 下一步（Resume Point）
 
-1. 把 `docs/interview-questions.md` 的 Q14（RWLock vs Mutex 核心差異）、Q16（`shift()` vs `forEach` 清空佇列的 bug）用自己的話寫完
-2. 跟導師討論：Week 2 要不要先做收尾（面試考題彙整複習 + 學習成果說明），還是直接進 **Week 3 — Queue / Worker Pool**
+跟導師討論：Week 2 要不要先做收尾（面試考題彙整複習 + 撰寫 `docs/learning-summary.md`），還是直接進 **Week 3 — Queue / Worker Pool**（原始規格文件第 8、9 節）。
 
 ## 待釐清 / 卡住的地方
 
