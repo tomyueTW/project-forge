@@ -77,3 +77,24 @@
   - `examples/week2-read-write-lock.ts`：驗證 20 個並發 reader、writer 完全不與 active reader 重疊、writer 即使在持續有新 reader 抵達的情況下依然能完成（沒有 starvation）
 - 還沒搞懂的地方：
   - （持續更新）
+
+---
+
+## Week 2 總結（非正式；正式版 `docs/learning-summary.md` 留到整個 Forge I 完成後才寫）
+
+> 以下用自己的話寫，不要照抄上面的筆記或程式碼註解。
+
+### 做了什麼
+
+
+### 關鍵設計決策與取捨
+
+
+### 踩過的坑（附重現方式與根因）
+
+
+### 如果重做一次會怎麼改
+
+
+### 我現在能講清楚的概念 / 我還不太確定的概念
+
