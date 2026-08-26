@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 2 完整收尾（實作、測試、Q1–Q16、`learning-log.md` 的 Week 2 總結全部完成）
-- **目前任務**：準備開始 **Week 3 — Queue / Worker Pool**（原始規格文件第 8、9 節）
+- **週次**：Week 3 — Queue / Worker Pool，現在從 Queue 開始
+- **目前任務**：完成 `src/queue/queue.ts` 的 `enqueue()` / `dequeue()`（跟 Mutex/Semaphore 同一套 queue-based pattern，這次自己嘗試，不逐步帶）
 
 ## 已完成
 
@@ -27,11 +27,11 @@
 
 ## 進行中
 
-（無 — Week 2 全部完成：Mutex、Semaphore、Read-Write Lock 三個 primitive，`docs/interview-questions.md` Q1–Q16 全數 review 通過）
+- [ ] `src/queue/queue.ts`：`enqueue()` / `dequeue()`
 
 ## 下一步（Resume Point）
 
-跟導師討論：Week 2 要不要先做收尾（面試考題彙整複習 + 撰寫 `docs/learning-summary.md`），還是直接進 **Week 3 — Queue / Worker Pool**（原始規格文件第 8、9 節）。
+完成 `src/queue/queue.ts` 的 TODO，回報導師 review。之後接續 Worker Pool（`src/worker/`），最後刻意製造 backpressure（queue 塞爆）並修復。
 
 ## 待釐清 / 卡住的地方
 
