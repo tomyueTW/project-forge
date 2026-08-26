@@ -121,3 +121,17 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 
 ---
 
+## Queue（Week 3）
+
+## Q17. `Queue<T>` 要解決的問題是什麼？`enqueue()`/`dequeue()` 各自可能遇到的兩種情境是什麼？
+**你的回答：** Queue 可以解耦合，讓 producer 和 consumer 可以不用相互拖延。`dequeue()` 沒東西時要排隊等；`enqueue()` 有人在等時直接交給他，沒人等才放進 `items`。
+
+**Review：** 通過。解耦合的動機、`enqueue()`/`dequeue()` 各自的兩種情境都講到了。
+
+## Q18. 沒有人排隊時連續 `enqueue("A")`、`enqueue("B")`、`enqueue("C")`，之後呼叫一次 `dequeue()`，會拿到哪一個？為什麼？
+**你的回答：** A，應該要重頭拿。
+
+**Review：** 對。`enqueue()` 用 `push()` 加到陣列尾端，`dequeue()` 用 `shift()` 從陣列前端拿——先進去的先被拿走，這就是 FIFO（先進先出）。
+
+---
+

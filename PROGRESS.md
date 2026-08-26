@@ -8,9 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 3 — 程式碼都已完成（Queue、Worker Pool、backpressure 示範），但發現流程漏洞：
-  Queue 跟 Worker Pool 當初教學太快帶過、也沒有當場出面試考題／更新 learning-log，現在補回來
-- **目前任務**：重新完整教學 Queue（純講解，暫不涉及程式碼）——目前卡在一個追問：連續 `enqueue("A")`、`enqueue("B")`、`enqueue("C")`（沒人在排隊等）之後呼叫一次 `dequeue()`，會拿到哪一個、為什麼
+- **週次**：Week 3 — Queue 補教完成（Q17、Q18 review 通過，learning-log 補上）
+- **目前任務**：重新完整教學 Worker Pool（純講解，暫不涉及程式碼），教完再出面試考題、補 learning-log
 
 ## 已完成
 
@@ -29,15 +28,14 @@
 ## 進行中
 
 - [x] 程式碼實作全部完成：`src/queue/queue.ts`、`src/worker/worker-pool.ts`、backpressure 示範（`examples/week3-backpressure-problem.ts`）
-- [x] `src/queue/bounded-queue.ts` 骨架已給，教學講過一次（enqueue/dequeue 雙向排隊、dequeue() 要順便釋放等待中的 producer）
-- [ ] **Queue 重新教學中**：概念（producer/consumer 解耦、四種情境、trace）講完了，正在等你回答一題追問
-- [ ] Queue 教學通過後：出面試考題、記錄 `learning-log.md`
-- [ ] Worker Pool：同樣要重新做一次教學 + 面試考題 + learning-log（原本跳過了）
+- [x] `src/queue/bounded-queue.ts` 骨架已給，教學講過一次（enqueue/dequeue 雙向排隊、dequeue() 要順便釋放等待中的 producer），implement 尚未開始
+- [x] Queue：重新教學 + Q17、Q18 review 通過 + learning-log 補上
+- [ ] Worker Pool：需要重新教學（純講解）+ 面試考題 + learning-log
 - [ ] BoundedQueue：teach 已完成，implement 尚未開始
 
 ## 下一步（Resume Point）
 
-回答導師的追問：Queue 沒人排隊時連續 `enqueue("A")`、`enqueue("B")`、`enqueue("C")`，之後 `dequeue()` 一次會拿到哪個、為什麼。答完後導師會依序補：Queue 面試考題 → Worker Pool 重新教學+考題 → 回到 BoundedQueue 實作。
+導師重新教學 Worker Pool（純講解，不涉及程式碼），教完出面試考題、補 `learning-log.md`。之後回到 `src/queue/bounded-queue.ts` 實作。
 
 ## 待釐清 / 卡住的地方
 

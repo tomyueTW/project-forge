@@ -80,6 +80,22 @@
 
 ---
 
+## Week 3 — Queue
+
+- 學到什麼：
+  - Queue 解決的問題：讓 Producer 跟 Consumer 的速度脫鉤，Producer 丟進去就能繼續做別的事，Consumer 沒資料時「排隊等」而不是不斷輪詢檢查
+  - 這是跟 Mutex/Semaphore/RWLock 同一套 queue-based 協調 pattern 的第 4 次應用：沒資源就把 `resolve` 存起來排隊，之後才被呼叫；差別是這次 `resolve` 要帶著一個實際的資料值
+  - `enqueue()`/`dequeue()` 各自有兩種情境：`enqueue()` 有人在排隊等資料就直接交給他（不進 `items`）、沒人等就放進 `items`；`dequeue()` `items` 有東西就直接 `shift()`、沒東西就排隊等
+  - `items` 陣列用 `push()` 加尾端、`shift()` 拿前端，天然就是 FIFO（先進先出）
+- 弄壞了什麼、怎麼弄壞的：
+  - 沒有，`enqueue()`/`dequeue()` 一次寫對，沒踩到之前踩過的 `node:dns` import 陷阱
+- 怎麼修好的：
+  - （不適用，沒有 bug）
+- 還沒搞懂的地方：
+  - （持續更新）
+
+---
+
 ## Week 2 總結（非正式；正式版 `docs/learning-summary.md` 留到整個 Forge I 完成後才寫）
 
 > 以下用自己的話寫，不要照抄上面的筆記或程式碼註解。
