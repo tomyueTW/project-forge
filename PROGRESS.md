@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 3 — Queue、Worker Pool 完成並驗證通過（20 任務、併發上限 4，最大同時處理數精確等於 4）
-- **目前任務**：刻意製造 backpressure（queue 塞爆），觀察問題，再實作 BoundedQueue 修復
+- **週次**：Week 3 — Queue、Worker Pool 完成；backpressure 問題已示範重現（`examples/week3-backpressure-problem.ts`）
+- **目前任務**：完成 `src/queue/bounded-queue.ts` 的 `enqueue()` / `dequeue()`（Producer 滿了要排隊等空位）
 
 ## 已完成
 
@@ -27,13 +27,13 @@
 
 ## 進行中
 
-- [x] `src/queue/queue.ts`：`enqueue()` / `dequeue()` 完成，一次就對，typecheck 通過
-- [x] `src/worker/worker-pool.ts`：`start()` / `runWorker()` 完成，一次就對
-- [x] `examples/week3-worker-pool.ts`：驗證通過（20 任務、併發上限 4，最大同時處理數 = 4）
+- [x] `src/queue/queue.ts`、`src/worker/worker-pool.ts` 完成並驗證
+- [x] backpressure 問題示範：無容量上限的 Queue 在 producer 遠快於 worker 時，`size` 幾乎不會下降（100k 筆塞進去，2.5 秒只消化 44 筆）
+- [ ] `src/queue/bounded-queue.ts`：`enqueue()` / `dequeue()`（有容量上限，滿了要讓 producer 排隊等空位）
 
 ## 下一步（Resume Point）
 
-刻意製造 backpressure：讓 producer 遠快於 worker 處理速度，觀察 `Queue` 目前的 `items` 陣列會無限長大。接著實作 `BoundedQueue`（`enqueue()` 在滿了的時候要讓 producer 排隊等，而不是無限塞）。
+完成 `src/queue/bounded-queue.ts` 的 TODO。這是這週最複雜的一個 primitive——`enqueue()`/`dequeue()` 都要處理「直接成功」跟「要排隊」兩種情況，而且彼此會互相釋放對方，仔細看骨架註解。
 
 ## 待釐清 / 卡住的地方
 
