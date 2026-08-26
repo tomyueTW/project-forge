@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 3 — Queue 完成（typecheck 過、其他測試沒壞），現在進行 Worker Pool
-- **目前任務**：完成 `src/worker/worker-pool.ts` 的 `start()` / `runWorker()`
+- **週次**：Week 3 — Queue、Worker Pool 完成並驗證通過（20 任務、併發上限 4，最大同時處理數精確等於 4）
+- **目前任務**：刻意製造 backpressure（queue 塞爆），觀察問題，再實作 BoundedQueue 修復
 
 ## 已完成
 
@@ -28,18 +28,12 @@
 ## 進行中
 
 - [x] `src/queue/queue.ts`：`enqueue()` / `dequeue()` 完成，一次就對，typecheck 通過
-- [ ] `src/worker/worker-pool.ts`：`start()` / `runWorker()`
-- [ ] `examples/week3-worker-pool.ts`：驗證 4 條 worker 迴圈處理 20 個任務，同時處理數不超過 4
+- [x] `src/worker/worker-pool.ts`：`start()` / `runWorker()` 完成，一次就對
+- [x] `examples/week3-worker-pool.ts`：驗證通過（20 任務、併發上限 4，最大同時處理數 = 4）
 
 ## 下一步（Resume Point）
 
-完成 `src/worker/worker-pool.ts` 的 TODO，執行：
-
-```bash
-npx tsx examples/week3-worker-pool.ts
-```
-
-確認 `maxActive <= 4`。之後接續刻意製造 backpressure（queue 塞爆會怎樣）並修復。
+刻意製造 backpressure：讓 producer 遠快於 worker 處理速度，觀察 `Queue` 目前的 `items` 陣列會無限長大。接著實作 `BoundedQueue`（`enqueue()` 在滿了的時候要讓 producer 排隊等，而不是無限塞）。
 
 ## 待釐清 / 卡住的地方
 

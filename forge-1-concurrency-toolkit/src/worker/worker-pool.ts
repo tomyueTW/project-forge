@@ -13,13 +13,15 @@ export class WorkerPool<T> {
   ) {}
 
   start(): void {
-    // TODO：啟動 this.concurrency 條 worker 迴圈
-    // 提示：呼叫 this.runWorker(i) 但不要 await 它（要讓所有 worker「同時」跑）
-    throw new Error("TODO: implement WorkerPool.start()");
+    for (let i = 0; i < this.concurrency; i++) {
+      this.runWorker(i);
+    }
   }
 
   private async runWorker(id: number): Promise<void> {
-    // TODO：無窮迴圈：await this.queue.dequeue() 拿任務，await this.handler(task) 處理
-    throw new Error("TODO: implement WorkerPool.runWorker()");
+    while (true) {
+      const task = await this.queue.dequeue();
+      await this.handler(task);
+    }
   }
 }
