@@ -8,8 +8,10 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 3 — Queue 補教完成（Q17、Q18 review 通過，learning-log 補上）
-- **目前任務**：重新完整教學 Worker Pool（純講解，暫不涉及程式碼），教完再出面試考題、補 learning-log
+- **週次**：Week 3 — Worker Pool 教學（純講解）進行中：N 條 worker 迴圈共搶 Queue、併發數=迴圈數、
+  「呼叫但不 await」的必要性、work-stealing 式自然負載平衡都講過了
+- **目前任務**：等你回答導師的追問——Queue 空了時，Worker 卡在 `await this.queue.dequeue()`，
+  會不會像 polling 一樣不斷檢查？為什麼會／不會？
 
 ## 已完成
 
