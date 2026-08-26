@@ -86,15 +86,22 @@
 
 ### 做了什麼
 
+這週完整實作了三個 synchronization primitive：Mutex（互斥鎖）、Semaphore（限制同時使用人數的鎖）、Read-Write Lock（允許多個讀者、但寫者需要獨佔）。每個都搭配了範例驗證正確性，Mutex 還補上了正式的 Vitest 測試（unit + concurrency）。
 
 ### 關鍵設計決策與取捨
 
+Mutex 保證同一時間只有一個人能進入臨界區，是最基本的 critical section 保護。Semaphore 是 Mutex 的推廣，把「有沒有人持有」換成「還剩幾個名額」，適合用在需要限制同時使用量的場景（例如連線池）。Read-Write Lock 則是針對讀多寫少這種更貼近實務的場景設計——讓彼此不衝突的 reader 可以並存，只有 writer 需要獨佔，避免像 Mutex 一樣讓讀取也要無謂地排隊。三者都用同一套「queue-based」pattern 實作：沒資源時把 `resolve` 存進佇列排隊，`release()` 時再把佇列裡的人叫醒。
 
 ### 踩過的坑（附重現方式與根因）
 
+`ReadWriteLock.releaseWrite()` 用 `forEach` 把所有排隊的 reader 叫醒，但沒有清空 `waitingReaders` 陣列——`forEach` 只是拜訪過一遍，不像 `shift()` 會真的把元素移除。結果是舊的（早就叫醒過、早就讀完的）resolve 函式殘留在陣列裡，下次同一個分支被觸發時又被重複呼叫一次。`next()` 呼叫在已經 resolve 過的 Promise 上不會報錯，但 `this.activeReaders++` 沒有這種保護，還是照樣執行，導致 `activeReaders` 被持續灌水、永遠回不到 0，最終讓 `acquireWrite()` 要求的 `activeReaders === 0` 永遠不成立，writer 被永久卡死。另外也踩過兩次同一個坑：打 `resolve` 這個變數名稱時，編輯器自動 import 了 `node:dns` 的同名函式，雖然被區域參數遮蔽、不影響執行，但第一次沒發現、第二次自己認出來了。
 
 ### 如果重做一次會怎麼改
 
+Mutex 一開始完全卡住，是因為不熟悉「把 Promise 的 `resolve` 存到外部變數、晚一點才呼叫」這個 pattern，硬啃完整的 Mutex 反而更難抓到重點。如果重來一次，我會先跟導師要一個最小的、跟 Mutex 完全無關的範例，把這個技巧單獨拆出來理解，再回頭套進 Mutex，會比一次面對完整實作更快抓到核心。
 
 ### 我現在能講清楚的概念 / 我還不太確定的概念
 
+**能講清楚**：Mutex、Semaphore、Read-Write Lock 各自的機制與適用場景，以及 `shift()` 清空佇列 vs `forEach` 只拜訪的差異。
+
+**還不太確定**：Read-Write Lock 防止 writer starvation 的完整機制——`acquireRead()` 要多檢查 `waitingWriters.length === 0`、`releaseWrite()` 要優先叫醒 writer 而非 reader，這兩個規則怎麼互相配合、缺一不可，我需要導師提示好幾次才抓到，還沒有到能不假思索講清楚的程度。

@@ -8,8 +8,8 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 2 全部完成（Mutex、Semaphore、Read-Write Lock，Q1–Q16 全數 review 通過）
-- **目前任務**：決定要不要先做 Week 2 收尾（複習 + 學習成果說明），或直接進 **Week 3 — Queue / Worker Pool**
+- **週次**：Week 2 完整收尾（實作、測試、Q1–Q16、`learning-log.md` 的 Week 2 總結全部完成）
+- **目前任務**：準備開始 **Week 3 — Queue / Worker Pool**（原始規格文件第 8、9 節）
 
 ## 已完成
 
