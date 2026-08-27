@@ -94,6 +94,20 @@
 - 還沒搞懂的地方：
   - （持續更新）
 
+## Week 3 — Worker Pool
+
+- 學到什麼：
+  - 併發數的來源：開了幾條「worker 迴圈」，不需要額外的計數器或 Semaphore——每條迴圈同時只能處理一個任務，N 條迴圈同時最多就是 N 個任務在跑
+  - `start()` 呼叫 `runWorker(i)` 絕對不能加 `await`：`runWorker` 是 `while (true)` 的無窮迴圈，永遠不會 resolve，如果 `await` 它，`for` 迴圈會永遠卡在第一次呼叫，後面的 worker 從未被啟動——併發數會悄悄從設定值掉到 1，而且不會報錯，很難被發現
+  - work-stealing 式的自然負載平衡：不需要額外的排程邏輯，誰先處理完手上的任務，誰就自動去 Queue 要下一個
+  - Queue 空了時 worker 卡在 `dequeue()`，不是 polling（不斷檢查），是完全被動地等——`dequeue()` 在沒資料時只執行一次「建立 pending Promise、存 resolve」就結束，之後 0 資源消耗，直到某次 `enqueue()` 主動呼叫它才醒來
+- 弄壞了什麼、怎麼弄壞的：
+  - 沒有寫錯程式碼，但一開始沒辦法自己推導出「為什麼不能加 await」，透過具體追蹤「runWorker(0) 到底被呼叫了幾次」才想清楚
+- 怎麼修好的：
+  - （不適用，是理解上的坑，不是程式碼 bug）
+- 還沒搞懂的地方：
+  - （持續更新）
+
 ---
 
 ## Week 2 總結（非正式；正式版 `docs/learning-summary.md` 留到整個 Forge I 完成後才寫）

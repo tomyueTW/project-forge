@@ -8,10 +8,10 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 3 — Worker Pool 教學（純講解）進行中：N 條 worker 迴圈共搶 Queue、併發數=迴圈數、
-  「呼叫但不 await」的必要性、work-stealing 式自然負載平衡都講過了
-- **目前任務**：等你回答導師的追問——Queue 空了時，Worker 卡在 `await this.queue.dequeue()`，
-  會不會像 polling 一樣不斷檢查？為什麼會／不會？
+- **週次**：Week 3 — Queue、Worker Pool 都補教完成（Q17–Q20 review 通過，learning-log 補齊）
+- **目前任務**：回到 BoundedQueue——教學已經講過一次（enqueue/dequeue 雙向排隊機制、trace），
+  還欠一題回答：`dequeue()` 為什麼要「順便」檢查 `waitingProducers`？不檢查會有什麼問題？
+  答完才進入 implement 階段
 
 ## 已完成
 
@@ -29,15 +29,14 @@
 
 ## 進行中
 
-- [x] 程式碼實作全部完成：`src/queue/queue.ts`、`src/worker/worker-pool.ts`、backpressure 示範（`examples/week3-backpressure-problem.ts`）
-- [x] `src/queue/bounded-queue.ts` 骨架已給，教學講過一次（enqueue/dequeue 雙向排隊、dequeue() 要順便釋放等待中的 producer），implement 尚未開始
-- [x] Queue：重新教學 + Q17、Q18 review 通過 + learning-log 補上
-- [ ] Worker Pool：需要重新教學（純講解）+ 面試考題 + learning-log
-- [ ] BoundedQueue：teach 已完成，implement 尚未開始
+- [x] 程式碼實作：`src/queue/queue.ts`、`src/worker/worker-pool.ts`、backpressure 示範，都完成並驗證
+- [x] Queue：教學 + Q17、Q18 + learning-log 全部完成
+- [x] Worker Pool：教學 + Q19、Q20 + learning-log 全部完成
+- [ ] BoundedQueue：teach 已完成，implement 尚未開始，還欠一題確認理解
 
 ## 下一步（Resume Point）
 
-導師重新教學 Worker Pool（純講解，不涉及程式碼），教完出面試考題、補 `learning-log.md`。之後回到 `src/queue/bounded-queue.ts` 實作。
+回答：`BoundedQueue.dequeue()` 為什麼要「順便」檢查 `waitingProducers`？不檢查會有什麼問題？答完後開始實作 `src/queue/bounded-queue.ts`。
 
 ## 待釐清 / 卡住的地方
 

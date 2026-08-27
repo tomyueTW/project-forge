@@ -135,3 +135,17 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 
 ---
 
+## Worker Pool（Week 3）
+
+## Q19. Worker Pool 的併發數是怎麼被限制住的？為什麼 `start()` 裡呼叫 `runWorker(i)` 不能加 `await`？
+**你的回答：** 併發數 = 開了幾條迴圈，不需要額外的 Semaphore。如果加了 `await`，`runWorker` 是無窮迴圈永遠不會結束，`for` 迴圈會卡在 `i = 0`，`runWorker(1)`、`runWorker(2)`、`runWorker(3)` 永遠不會被呼叫到——實際上只有 1 個 worker 在跑，不是設定的 4 個。
+
+**Review：** 通過。兩個重點都講到了：併發數的來源（迴圈數量本身，不靠計數器）、以及加 `await` 會怎麼壞（`for` 迴圈卡死在第一次呼叫，其他 worker 從未真正啟動，併發數悄悄從 4 掉到 1，而且不會報錯，很難被發現）。
+
+## Q20. Queue 空了的時候，Worker 卡在 `await this.queue.dequeue()`，會不會像 polling 一樣不斷檢查？為什麼？
+**你的回答：** 沒有迴圈，只是建立一個 Promise 就結束了。
+
+**Review：** 對，抓到關鍵：`dequeue()` 在沒資料時只執行一次「建立 pending Promise、把 resolve 存進佇列」，之後完全被動，不消耗任何 CPU，直到未來某次 `enqueue()` 主動呼叫它才會被「叫醒」。這是 push（被動通知）而不是 polling（主動反覆檢查）——本質差異在於等待期間有沒有任何東西在背景重複執行。
+
+---
+
