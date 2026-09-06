@@ -108,6 +108,20 @@
 - 還沒搞懂的地方：
   - （持續更新）
 
+## Week 3 — BoundedQueue（教學 + Q21 完成，實作尚未開始）
+
+- 學到什麼：
+  - `Queue<T>` 沒有容量上限的問題：Consumer 處理不過來時，`items` 會無限成長，只是把問題往後拖延；`BoundedQueue<T>` 訂出 `maxSize`，滿了就不准再塞，把壓力直接回傳給 Producer，這就是 backpressure 的具體實作
+  - 從「單向排隊」變成「雙向排隊」：`Queue<T>` 只有 consumer 會排隊等資料，`BoundedQueue<T>` 多了 `waitingProducers`，沒空位時 producer 也要排隊等——同一套 queue-based 協調 pattern（沒資源就把 resolve 存起來排隊）的延伸，差別是這次有兩種資源（資料 / 空位），`waitingProducers` 裡連帶存著還沒地方放的 `item`
+  - `dequeue()` 每次 `shift()` 騰出空位後，要「順便」檢查 `waitingProducers`，直接把空位轉交給下一個等待的 producer，而不是讓空位進 `items` 後讓 producer 自己再想辦法拿到
+  - 為什麼一定要順便檢查：整個 class 裡只有 `dequeue()` 這段程式碼會呼叫 `waitingProducers` 裡存的 `resolve`；拿掉它之後沒有其他任何路徑會呼叫到，卡住的 producer 不是等久一點，而是永遠不會被叫醒——這是 **lost wakeup**（missed signal），資源已經釋放但通知的那一步被漏掉
+- 弄壞了什麼、怎麼弄壞的：
+  - （尚未開始實作，待補）
+- 怎麼修好的：
+  - （尚未開始實作，待補）
+- 還沒搞懂的地方：
+  - （持續更新）
+
 ---
 
 ## Week 2 總結（非正式；正式版 `docs/learning-summary.md` 留到整個 Forge I 完成後才寫）

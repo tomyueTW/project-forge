@@ -149,3 +149,12 @@ SafeCounter 的作法：read 和 write 之間不能有任何 await，但是讀�
 
 ---
 
+## BoundedQueue（Week 3）
+
+## Q21. `dequeue()` 為什麼要「順便」檢查 `waitingProducers`？不檢查會有什麼問題？
+**你的回答：** （第一次）Producer 會一直卡住，即使有空位空出來。（追問「一直卡住是等久一點還是永遠不會醒」，一開始答不出來，經過導師拆解「整個 class 只有 dequeue() 那段程式碼會呼叫 waitingProducers 的 resolve」之後）C 會永遠卡住，因為 resolve 沒被呼叫。
+
+**Review：** 通過。抓到了核心：整個 `BoundedQueue` 裡，`resolve` 只有 `dequeue()` 那段「順便檢查」的邏輯會呼叫；拿掉它之後，沒有任何其他程式碼路徑會去呼叫這個 producer 的 `resolve`，所以這不是運氣不好等久一點，而是結構性地永遠不會被叫醒——這是 **lost wakeup**（missed signal）的一個實例，資源（空位）已經釋放，但負責通知等待者的那一步被漏掉，等待者就永久卡死。
+
+---
+

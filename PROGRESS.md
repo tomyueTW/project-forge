@@ -8,10 +8,12 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 3 — Queue、Worker Pool 都補教完成（Q17–Q20 review 通過，learning-log 補齊）
-- **目前任務**：回到 BoundedQueue——教學已經講過一次（enqueue/dequeue 雙向排隊機制、trace），
-  還欠一題回答：`dequeue()` 為什麼要「順便」檢查 `waitingProducers`？不檢查會有什麼問題？
-  答完才進入 implement 階段
+- **週次**：Week 3 — Queue、Worker Pool 都補教完成（Q17–Q20 review 通過，learning-log 補齊）；
+  BoundedQueue 教學 + Q21 完成（review 通過，learning-log 已記錄機制部分）
+- **目前任務**：開始實作 `src/queue/bounded-queue.ts`——骨架已存在（`enqueue()`/`dequeue()` 都是 TODO），
+  照骨架註解把 enqueue 的三條分支、dequeue 的「順便轉交空位給 waitingProducers」補完，
+  再跑 `npm test` / `npm run typecheck` 驗證
+- **關聯專案**：`C:\Users\Quentin\Documents\QTSoloLeveling`（轉職準備：LeetCode/Java/Go/履歷，獨立 repo，進度見該專案的 `progress.md`）——目標是兩個專案盡量同步完成，落差太大就要調整時間分配
 
 ## 已完成
 
@@ -32,11 +34,12 @@
 - [x] 程式碼實作：`src/queue/queue.ts`、`src/worker/worker-pool.ts`、backpressure 示範，都完成並驗證
 - [x] Queue：教學 + Q17、Q18 + learning-log 全部完成
 - [x] Worker Pool：教學 + Q19、Q20 + learning-log 全部完成
-- [ ] BoundedQueue：teach 已完成，implement 尚未開始，還欠一題確認理解
+- [x] BoundedQueue：教學 + Q21 + learning-log（機制部分）全部完成
+- [ ] BoundedQueue：implement 尚未開始
 
 ## 下一步（Resume Point）
 
-回答：`BoundedQueue.dequeue()` 為什麼要「順便」檢查 `waitingProducers`？不檢查會有什麼問題？答完後開始實作 `src/queue/bounded-queue.ts`。
+實作 `src/queue/bounded-queue.ts`：補完 `enqueue()` 的三條分支（交給等待中的 consumer／還有空位就 push／滿了就排進 `waitingProducers`）與 `dequeue()`（`shift()` 之後順便把空位轉交給 `waitingProducers` 佇列最前面的人）。完成後跑 `npm test` / `npm run typecheck`，再回顧程式碼、補 learning-log 的「弄壞了什麼／怎麼修好的」。
 
 ## 待釐清 / 卡住的地方
 
