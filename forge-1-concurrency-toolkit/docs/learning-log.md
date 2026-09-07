@@ -108,17 +108,24 @@
 - 還沒搞懂的地方：
   - （持續更新）
 
-## Week 3 — BoundedQueue（教學 + Q21 完成，實作尚未開始）
+## Week 3 — BoundedQueue
 
 - 學到什麼：
   - `Queue<T>` 沒有容量上限的問題：Consumer 處理不過來時，`items` 會無限成長，只是把問題往後拖延；`BoundedQueue<T>` 訂出 `maxSize`，滿了就不准再塞，把壓力直接回傳給 Producer，這就是 backpressure 的具體實作
   - 從「單向排隊」變成「雙向排隊」：`Queue<T>` 只有 consumer 會排隊等資料，`BoundedQueue<T>` 多了 `waitingProducers`，沒空位時 producer 也要排隊等——同一套 queue-based 協調 pattern（沒資源就把 resolve 存起來排隊）的延伸，差別是這次有兩種資源（資料 / 空位），`waitingProducers` 裡連帶存著還沒地方放的 `item`
   - `dequeue()` 每次 `shift()` 騰出空位後，要「順便」檢查 `waitingProducers`，直接把空位轉交給下一個等待的 producer，而不是讓空位進 `items` 後讓 producer 自己再想辦法拿到
   - 為什麼一定要順便檢查：整個 class 裡只有 `dequeue()` 這段程式碼會呼叫 `waitingProducers` 裡存的 `resolve`；拿掉它之後沒有其他任何路徑會呼叫到，卡住的 producer 不是等久一點，而是永遠不會被叫醒——這是 **lost wakeup**（missed signal），資源已經釋放但通知的那一步被漏掉
+  - `new Promise((resolve) => {...})` 的第一個參數本身就是 `resolve` 函式，不是一個帶 `.item`/`.resolve` 屬性的物件——一開始把這兩件事搞混，對 executor 的參數做物件解構，TS 直接報錯（`Property 'item' does not exist on type '(value...) => void'`）
+  - `waitingProducers.shift()` 拿出來的是 `{ item, resolve }` 物件，不是函式本身（跟 `waitingConsumers.shift()` 拿到的東西型別不同），不能直接 `next(item)` 呼叫，要分開用 `this.items.push(next.item)` 和 `next.resolve()`；且順序要先 push 再 resolve，避免 resolve 之後外部程式碼讀到還沒更新的 `items`
 - 弄壞了什麼、怎麼弄壞的：
-  - （尚未開始實作，待補）
+  - 第一版 `enqueue()` 三條分支都寫錯：有 consumer 等待時直接 `return item`（沒有呼叫任何 `resolve`，consumer 永遠不會被喚醒）；滿了的分支對 Promise executor 做錯誤的物件解構
+  - 第一版 `dequeue()`：把 `waitingProducers.shift()` 拿到的物件當函式呼叫（`next(item)`，TS 報 `not callable`），而且 `items.length > 0` 分支跑完後忘記 `return item`（TS 報 `lacks ending return statement`）
+  - `npm run typecheck` 一次抓到全部 7 個錯誤，照著錯誤訊息逐一修正
 - 怎麼修好的：
-  - （尚未開始實作，待補）
+  - `enqueue()` 第一條分支比照 `Queue<T>.enqueue()`：`const next = this.waitingConsumers.shift()!; next(item); return;`
+  - `enqueue()` 第三條分支：`new Promise<void>((resolve) => { this.waitingProducers.push({ item, resolve }); })`——`item` 直接用外層參數，`resolve` 是 executor 給的函式，不需要解構
+  - `dequeue()`：`this.items.shift()!` 補 `!`；轉交空位改成 `this.items.push(next.item); next.resolve();`；分支最後補上 `return item;`
+  - `examples/week3-bounded-queue-fix.ts` 驗證：容量滿了 `enqueue()` 確實卡住、`queue.size` 全程沒有超過 `maxSize`、`dequeue()` 一執行完卡住的 producer 立刻被喚醒
 - 還沒搞懂的地方：
   - （持續更新）
 

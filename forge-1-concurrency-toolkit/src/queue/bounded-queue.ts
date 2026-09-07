@@ -28,7 +28,19 @@ export class BoundedQueue<T> {
     //   否則（滿了）：
     //     回傳一個 pending Promise，把 { item, resolve } 存進 waitingProducers，
     //     等未來某次 dequeue() 幫你把這個 item 塞進去、呼叫 resolve
-    throw new Error("TODO: implement BoundedQueue.enqueue()");
+
+    if (this.waitingConsumers.length > 0) {
+      const next = this.waitingConsumers.shift()!;
+      next(item);
+      return;
+    } else if (this.items.length < this.maxSize) {
+      this.items.push(item)
+      return
+    } else {
+      return new Promise<void>((resolve) => {
+        this.waitingProducers.push({ item, resolve });
+      })
+    }
   }
 
   async dequeue(): Promise<T> {
@@ -42,7 +54,19 @@ export class BoundedQueue<T> {
     //     最後回傳一開始存的 item
     //   否則（沒東西可拿）：
     //     排隊等資料，邏輯跟 Queue<T> 一樣
-    throw new Error("TODO: implement BoundedQueue.dequeue()");
+    if (this.items.length > 0) {
+      const item = this.items.shift()!;
+      if (this.waitingProducers.length > 0) {
+        const next = this.waitingProducers.shift()!;
+        this.items.push(next.item);
+        next.resolve();
+      }
+      return item;
+    } else {
+      return new Promise<T>((resolve) => {
+        this.waitingConsumers.push(resolve);
+      }) 
+    }
   }
 
   get size(): number {

@@ -8,11 +8,11 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 3 — Queue、Worker Pool 都補教完成（Q17–Q20 review 通過，learning-log 補齊）；
-  BoundedQueue 教學 + Q21 完成（review 通過，learning-log 已記錄機制部分）
-- **目前任務**：開始實作 `src/queue/bounded-queue.ts`——骨架已存在（`enqueue()`/`dequeue()` 都是 TODO），
-  照骨架註解把 enqueue 的三條分支、dequeue 的「順便轉交空位給 waitingProducers」補完，
-  再跑 `npm test` / `npm run typecheck` 驗證
+- **週次**：Week 3 — Queue、Worker Pool、BoundedQueue 教學+實作+Q&A+learning-log 全部完成並驗證
+- **目前任務**：決定下一步——PLAN.md 原本規劃 Queue/Worker Pool 這個主題還包含
+  **priority queue、cancellation、Worker Pool graceful shutdown / worker failure retry**（見原始規格文件第 8、9 節），
+  這些都還沒教過；或者可以直接跳到 Week 5 的 Cache（TTL/LRU/cache-aside + Cache Stampede）。
+  下次開始前先問使用者要補這些子主題，還是直接往下一個 primitive 走。
 - **關聯專案**：`C:\Users\Quentin\Documents\QTSoloLeveling`（轉職準備：LeetCode/Java/Go/履歷，獨立 repo，進度見該專案的 `progress.md`）——目標是兩個專案盡量同步完成，落差太大就要調整時間分配
 
 ## 已完成
@@ -34,12 +34,14 @@
 - [x] 程式碼實作：`src/queue/queue.ts`、`src/worker/worker-pool.ts`、backpressure 示範，都完成並驗證
 - [x] Queue：教學 + Q17、Q18 + learning-log 全部完成
 - [x] Worker Pool：教學 + Q19、Q20 + learning-log 全部完成
-- [x] BoundedQueue：教學 + Q21 + learning-log（機制部分）全部完成
-- [ ] BoundedQueue：implement 尚未開始
+- [x] BoundedQueue：教學 + Q21 + 實作（`src/queue/bounded-queue.ts`）+ 驗證（`examples/week3-bounded-queue-fix.ts`）+ learning-log 全部完成
+      （第一版 `enqueue()`/`dequeue()` 寫錯了好幾處，靠 `npm run typecheck` 的錯誤訊息一一定位、逐條修正，過程記在 learning-log）
 
 ## 下一步（Resume Point）
 
-實作 `src/queue/bounded-queue.ts`：補完 `enqueue()` 的三條分支（交給等待中的 consumer／還有空位就 push／滿了就排進 `waitingProducers`）與 `dequeue()`（`shift()` 之後順便把空位轉交給 `waitingProducers` 佇列最前面的人）。完成後跑 `npm test` / `npm run typecheck`，再回顧程式碼、補 learning-log 的「弄壞了什麼／怎麼修好的」。
+BoundedQueue 整個循環（教學→實作→回顧→記錄）已經跑完。下次開始前先跟使用者確認方向：
+1. 補 Queue/Worker Pool 主題剩下沒教的子題：priority queue、cancellation、Worker Pool graceful shutdown / worker failure retry
+2. 或直接跳到 Week 5：Cache（TTL/LRU/cache-aside）+ Cache Stampede + Request Coalescing
 
 ## 待釐清 / 卡住的地方
 
