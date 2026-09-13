@@ -144,6 +144,21 @@
   - （持續更新）
 - 補充：目前用「線性掃描 + splice」實作（O(n)），日後若有興趣可以換成 binary heap（O(log n)），介面完全不用變——留作進階練習，非本週必修
 
+## Week 4 — Cancellation
+
+- 學到什麼：
+  - 動機：排隊等待的 consumer（`dequeue()` 卡在 `await`）可能需要放棄等待（timeout、使用者離開）。如果沒有真正把自己從 `waitingConsumers` 移除，會有兩層問題：(1) 陣列裡留著一個沒人在乎結果的殘留項目 (2) 更嚴重的是，之後 `enqueue()` 可能把新資料交給這個「名存實亡」的 consumer——因為 Promise 只能 settle 一次，對已經 reject 過的 promise 再呼叫 `resolve(item)` 會被靜默忽略，這筆資料就直接消失，沒有任何人真正收到它
+  - 標準工具：`AbortController`/`AbortSignal`（跟 `fetch()` 用的是同一套）。呼叫方在完全不同的時間點（例如 `setTimeout`）呼叫 `controller.abort()`，`dequeue()` 內部要在建立 pending promise 的當下，先掛好 `signal.addEventListener("abort", ...)` 監聽器，被觸發時才執行清理
+  - 取消時不能用 `shift()`——要取消的不一定排最前面，必須用 `this.waitingConsumers.indexOf(resolve)` 精準找到「自己」在陣列裡的位置，再用 `splice(index, 1)` 刪除那一個
+  - `index !== -1` 的防呆檢查一定要做：如果 `enqueue()` 搶先一步已經正常處理掉這個 consumer（本來就不在陣列裡了），`indexOf` 會回傳 `-1`；這時候如果沒檢查、直接 `splice(-1, 1)`，因為負數 index 代表「從陣列尾端數過來」，會誤刪陣列**最後一個、完全無辜的其他 consumer**——這是「忘記防呆反而製造新 bug」的具體案例，而且波及第三者
+- 弄壞了什麼、怎麼弄壞的：
+  - 沒有寫錯，這是全新的 API（`AbortSignal.addEventListener`）跟全新的技巧（用 `indexOf`+`splice` 精準移除，而不是 `shift`），第一次不知道怎麼寫，經導師完整示範程式碼跟拆解每一行之後理解並驗證
+- 怎麼修好的：
+  - （不適用，沒有 bug，是全新知識需要導師先示範）
+- 還沒搞懂的地方：
+  - （持續更新）
+- 補充：`examples/week4-cancellation.ts` 驗證：Consumer A 被取消後，之後 `enqueue()` 的資料正確交給真正還在等的 Consumer B，沒有被取消的 A 吃掉
+
 ---
 
 ## Week 2 總結（非正式；正式版 `docs/learning-summary.md` 留到整個 Forge I 完成後才寫）

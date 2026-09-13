@@ -20,12 +20,29 @@ export class Queue<T> {
     }
   }
 
-  async dequeue(): Promise<T> {
+  async dequeue(signal?: AbortSignal): Promise<T> {
     if (this.items.length > 0) {
       return this.items.shift()!;
     } else {
-      return new Promise<T>((resolve) => {
+      return new Promise<T>((resolve, reject) => {
         this.waitingConsumers.push(resolve);
+
+        // TODO：如果呼叫方有傳 signal 進來，掛一個 abort 監聽器：
+        //   一旦 signal 被觸發（signal.addEventListener("abort", ...)）：
+        //     用 indexOf() 找到剛剛存進 waitingConsumers 的這個 resolve 的位置
+        //     如果找到了（index !== -1），用 splice() 把它從 waitingConsumers 刪掉
+        //     呼叫 reject(new Error("dequeue cancelled"))
+        //   （沒有傳 signal 的話，維持原本行為，什麼都不用做）
+
+        if (signal) {
+          signal.addEventListener("abort", () => {
+            const index = this.waitingConsumers.indexOf(resolve);
+            if (index !== -1) {
+              this.waitingConsumers.splice(index, 1);
+              reject(new Error("dequeue cancelled"));
+            }
+          });
+        }
       })
     }
   }

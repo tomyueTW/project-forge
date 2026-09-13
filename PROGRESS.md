@@ -10,7 +10,7 @@
 - **階段**：Forge I — Concurrency Toolkit
 - **週次**：Week 3 完成；已依 `PLAN.md` §4.5 訂出 Forge I 剩餘進度時程（每週 5 小時、目標 2026-10-31 前完成，共 7 週）
 - **目前任務**：時程表 Week 1（2026-09-13 ~ 09-19）——補 Queue/Worker Pool 剩餘子題：
-  priority queue（已完成）、cancellation（下一個）、Worker Pool graceful shutdown、worker failure + retry
+  priority queue（已完成）、cancellation（已完成）、Worker Pool graceful shutdown（下一個）、worker failure + retry
   （記得 Week 1 額外加一題 idempotency 討論，排在 worker failure/retry 那一段）。
 - **關聯專案**：`C:\Users\Quentin\Documents\QTSoloLeveling`（轉職準備：LeetCode/Java/Go/履歷，獨立 repo，進度見該專案的 `progress.md`）——目標是兩個專案盡量同步完成，落差太大就要調整時間分配
 
@@ -37,12 +37,14 @@
       （第一版 `enqueue()`/`dequeue()` 寫錯了好幾處，靠 `npm run typecheck` 的錯誤訊息一一定位、逐條修正，過程記在 learning-log）
 - [x] PriorityQueue：教學 + Q22 + 實作（`src/queue/priority-queue.ts`）+ 驗證（`examples/week4-priority-queue.ts`）+ learning-log 全部完成
       （插入排序演算法是全新套路，第一次寫不出來，經導師拆解三步驟＋trace 後一次寫對）
+- [x] Cancellation：教學 + Q23 + 實作（修改 `src/queue/queue.ts` 的 `dequeue()` 加上 `AbortSignal` 支援）+ 驗證（`examples/week4-cancellation.ts`）+ learning-log 全部完成
+      （`AbortSignal.addEventListener` 跟 `indexOf`+`splice` 精準移除都是全新知識，經導師完整示範後理解並驗證；重點抓到 `splice(-1, 1)` 誤刪的陷阱）
 
 ## 下一步（Resume Point）
 
-依 `PLAN.md` §4.5 時程表 Week 1，priority queue 已完成，接下來是 **cancellation**：
+依 `PLAN.md` §4.5 時程表 Week 1，priority queue、cancellation 都已完成，接下來是 **Worker Pool graceful shutdown**：
 先講解概念與動機（教學步驟，先不出骨架），確認理解後才進入實作，
-再依序 graceful shutdown → worker failure/retry（含 idempotency 討論），每個都照「教學→實作→回顧→記錄」跑完整個循環。
+再進入 worker failure/retry（含 idempotency 討論），每個都照「教學→實作→回顧→記錄」跑完整個循環。
 
 ## 待釐清 / 卡住的地方
 
