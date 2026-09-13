@@ -156,15 +156,17 @@ Project-Forge/
 
 | 週次 | 日期範圍（約） | 主題 | 本週要刻意弄壞的東西 |
 |---|---|---|---|
-| 1 | 09-13 ~ 09-19 | Queue/Worker Pool 剩餘子題：priority queue、cancellation、graceful shutdown、worker failure + retry | 讓 worker 在處理任務時死掉，觀察沒有 retry/graceful shutdown 時任務會不會憑空消失 |
+| 1 | 09-13 ~ 09-19 | Queue/Worker Pool 剩餘子題：priority queue、cancellation、graceful shutdown、worker failure + retry；**額外加一題 idempotency 討論**（同一筆任務被 retry 兩次，系統會怎樣？） | 讓 worker 在處理任務時死掉，觀察沒有 retry/graceful shutdown 時任務會不會憑空消失；同一筆任務被重複執行會不會造成重複副作用 |
 | 2 | 09-20 ~ 09-26 | Cache 基礎：get/set/delete/clear、TTL/expiration、cache-aside pattern | 忘記設 TTL 或忘記 invalidate，讀到過期的髒資料 |
 | 3 | 09-27 ~ 10-03 | Cache 進階：LRU 換出策略、Cache Stampede 重現與修復（request coalescing / single-flight） | 大量請求同時 cache miss，打爆下游（stampede），再用 single-flight 修好 |
 | 4 | 10-04 ~ 10-10 | Deadlock：四條件、手刻一個真的會卡死的案例、實作至少一種避免策略（lock ordering 或 try-lock/timeout） | 兩個 lock 用相反順序取得，製造真正的 deadlock，再用 lock ordering 修好 |
 | 5 | 10-11 ~ 10-17 | Retry / Timeout / Cancellation（通用版）：`retry()`/`timeout()`/`cancel()`/`backoff()`，fixed vs exponential backoff、jitter | 全部 client 用固定 backoff 同時重試，製造 retry storm，再用 jitter 打散 |
-| 6 | 10-18 ~ 10-24 | Distributed Lock 概念（Redis SET NX/TTL/lease，討論為主）+ 補齊 Testing Requirements（Stress/Race/Deadlock Test、Benchmark） | 討論：單機 lock 直接搬到多台機器會在哪裡失效 |
+| 6 | 10-18 ~ 10-24 | Distributed Lock 概念（Redis SET NX/TTL/lease，討論為主）+ **實際跑一次 `docker run redis` + `redis-cli`/`ioredis` 打一次真的 `SET NX EX`**（摸過一次真實指令，不用寫完整實作）+ 補齊 Testing Requirements（Stress/Race/Deadlock Test、Benchmark） | 討論：單機 lock 直接搬到多台機器會在哪裡失效 |
 | 7（彈性，半週~一週） | 10-25 ~ 10-31 | 收尾：README/ADR、Final Deliverables 核對、Forge I 範圍內的第 45 節面試考題總複習、撰寫 `learning-summary.md` | — |
 
 **里程碑**：第 6 週結束時，所有 primitive 的程式碼與測試都應該完成；第 7 週純粹是文件與複習，不寫新程式碼。目標完成日期：**2026-10-31 前後**（1.5 個月）。
+
+**為什麼 Week 1 加 idempotency、Week 6 加真實 Redis 指令**：對照 Forge II 規格（第 21–23、28 節），Cache/Worker 部分幾乎是 Forge I 內容直接搬過去、只是換成 Redis/BullMQ，遷移效果很強；但 idempotency（duplicate job/payment callback）是 Forge II 的核心痛點，Forge I 原本完全沒排到，如果不先埋一題討論，會是 Forge II 開局的知識缺口。另外 Forge I 全程是純記憶體 TypeScript，沒碰過真實 infra，Forge II 一開始就要求 Redis/BullMQ/PostgreSQL——如果完全沒摸過真實工具，Forge II 第一週容易卡在「裝環境、除錯連線」而不是「驗證 concurrency 概念」，稀釋掉遷移效果。這兩個補強都刻意設計成不額外佔用時間，塞進既有週次的討論/示範裡。
 
 ---
 
