@@ -133,6 +133,41 @@ Project-Forge/
 
 ---
 
+## 4.5 Forge I 剩餘進度時程規劃（2026-09-13 訂定）
+
+**前提**：每週約 5 小時可運用，目標 1.5 個月（約 6.5 週）內完成 Forge I 剩下的部分。
+以下時程是**目標，不是死線**——某週真的卡住就順延，但拖延超過一週要回頭檢視是不是範圍抓太大。
+
+**已完成**（不佔用剩下的時程預算）：
+- Week 1：Event Loop / async-await 本質 / race condition
+- Week 2：Mutex / Semaphore / Read-Write Lock
+- Week 3：Queue（基本 enqueue/dequeue）、Worker Pool（基本 lifecycle/concurrency）、BoundedQueue（backpressure）
+
+**剩下要完成的範圍**（對照原始規格第 8、9、10、11、12、13、14、16 節）：
+- Queue/Worker Pool 子題：priority、cancellation、graceful shutdown、worker failure + retry
+- Cache：get/set/delete/clear、TTL/expiration、cache-aside、LRU、cache stampede、request coalescing
+- Deadlock：四條件、手刻真的會卡死的案例、至少一種避免策略
+- Retry / Timeout / Cancellation（通用版）：fixed/exponential backoff、jitter、retry storm、timeout propagation
+- Lock 補充：Distributed Lock 概念（Redis SET NX/TTL/lease，只求理解本質差異，不要求 production-grade 實作）
+- Testing Requirements 補齊：Stress Test、Race Test、Deadlock Test、Benchmark（No Lock vs Mutex vs Semaphore vs Queue）
+- 收尾：README/ADR、Final Deliverables checklist、對照原始規格第 45 節「Final Success Criteria」中屬於 Forge I 的子集做最終面試複習、`learning-summary.md`
+
+**每週排程**（從 2026-09-13 這週開始算第 1 週）：
+
+| 週次 | 日期範圍（約） | 主題 | 本週要刻意弄壞的東西 |
+|---|---|---|---|
+| 1 | 09-13 ~ 09-19 | Queue/Worker Pool 剩餘子題：priority queue、cancellation、graceful shutdown、worker failure + retry | 讓 worker 在處理任務時死掉，觀察沒有 retry/graceful shutdown 時任務會不會憑空消失 |
+| 2 | 09-20 ~ 09-26 | Cache 基礎：get/set/delete/clear、TTL/expiration、cache-aside pattern | 忘記設 TTL 或忘記 invalidate，讀到過期的髒資料 |
+| 3 | 09-27 ~ 10-03 | Cache 進階：LRU 換出策略、Cache Stampede 重現與修復（request coalescing / single-flight） | 大量請求同時 cache miss，打爆下游（stampede），再用 single-flight 修好 |
+| 4 | 10-04 ~ 10-10 | Deadlock：四條件、手刻一個真的會卡死的案例、實作至少一種避免策略（lock ordering 或 try-lock/timeout） | 兩個 lock 用相反順序取得，製造真正的 deadlock，再用 lock ordering 修好 |
+| 5 | 10-11 ~ 10-17 | Retry / Timeout / Cancellation（通用版）：`retry()`/`timeout()`/`cancel()`/`backoff()`，fixed vs exponential backoff、jitter | 全部 client 用固定 backoff 同時重試，製造 retry storm，再用 jitter 打散 |
+| 6 | 10-18 ~ 10-24 | Distributed Lock 概念（Redis SET NX/TTL/lease，討論為主）+ 補齊 Testing Requirements（Stress/Race/Deadlock Test、Benchmark） | 討論：單機 lock 直接搬到多台機器會在哪裡失效 |
+| 7（彈性，半週~一週） | 10-25 ~ 10-31 | 收尾：README/ADR、Final Deliverables 核對、Forge I 範圍內的第 45 節面試考題總複習、撰寫 `learning-summary.md` | — |
+
+**里程碑**：第 6 週結束時，所有 primitive 的程式碼與測試都應該完成；第 7 週純粹是文件與複習，不寫新程式碼。目標完成日期：**2026-10-31 前後**（1.5 個月）。
+
+---
+
 ## 5. 面試考題 / 學習成果說明的格式
 
 **`interview-questions.md`**（我出、你答、我 review 後定案）：

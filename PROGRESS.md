@@ -8,11 +8,10 @@
 ## 目前位置
 
 - **階段**：Forge I — Concurrency Toolkit
-- **週次**：Week 3 — Queue、Worker Pool、BoundedQueue 教學+實作+Q&A+learning-log 全部完成並驗證
-- **目前任務**：決定下一步——PLAN.md 原本規劃 Queue/Worker Pool 這個主題還包含
-  **priority queue、cancellation、Worker Pool graceful shutdown / worker failure retry**（見原始規格文件第 8、9 節），
-  這些都還沒教過；或者可以直接跳到 Week 5 的 Cache（TTL/LRU/cache-aside + Cache Stampede）。
-  下次開始前先問使用者要補這些子主題，還是直接往下一個 primitive 走。
+- **週次**：Week 3 完成；已依 `PLAN.md` §4.5 訂出 Forge I 剩餘進度時程（每週 5 小時、目標 2026-10-31 前完成，共 7 週）
+- **目前任務**：時程表 Week 1（2026-09-13 ~ 09-19）——補 Queue/Worker Pool 剩餘子題：
+  priority queue、cancellation、Worker Pool graceful shutdown、worker failure + retry。
+  尚未開始教學，下次從 priority queue 的「教學」步驟開始。
 - **關聯專案**：`C:\Users\Quentin\Documents\QTSoloLeveling`（轉職準備：LeetCode/Java/Go/履歷，獨立 repo，進度見該專案的 `progress.md`）——目標是兩個專案盡量同步完成，落差太大就要調整時間分配
 
 ## 已完成
@@ -39,9 +38,8 @@
 
 ## 下一步（Resume Point）
 
-BoundedQueue 整個循環（教學→實作→回顧→記錄）已經跑完。下次開始前先跟使用者確認方向：
-1. 補 Queue/Worker Pool 主題剩下沒教的子題：priority queue、cancellation、Worker Pool graceful shutdown / worker failure retry
-2. 或直接跳到 Week 5：Cache（TTL/LRU/cache-aside）+ Cache Stampede + Request Coalescing
+依 `PLAN.md` §4.5 時程表 Week 1：先講解 **priority queue** 的概念與動機（教學步驟，先不出骨架），
+確認理解後才進入 cancellation → graceful shutdown → worker failure/retry，依序照「教學→實作→回顧→記錄」跑完整個循環。
 
 ## 待釐清 / 卡住的地方
 
